@@ -5,7 +5,7 @@ import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repository
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
- 
+
 @Component
 public class VehiculoDataSeed implements CommandLineRunner {
 
@@ -32,8 +32,4 @@ public class VehiculoDataSeed implements CommandLineRunner {
            vehiculoRepository.save(v3);
        }
    }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 7ff575f1883dec5db2a29e60bd9a071ae999ecf0

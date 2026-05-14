@@ -59,8 +59,4 @@ public class EnvioVehiculoDataSeed implements CommandLineRunner {
             envioVehiculoRepository.save(r3);
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 7ff575f1883dec5db2a29e60bd9a071ae999ecf0

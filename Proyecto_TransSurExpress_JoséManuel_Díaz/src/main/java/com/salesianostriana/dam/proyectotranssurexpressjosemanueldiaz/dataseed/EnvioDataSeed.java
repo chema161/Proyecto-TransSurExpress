@@ -41,8 +41,4 @@ public class EnvioDataSeed implements CommandLineRunner {
            envioRepository.save(e3);
        }
    }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 7ff575f1883dec5db2a29e60bd9a071ae999ecf0
