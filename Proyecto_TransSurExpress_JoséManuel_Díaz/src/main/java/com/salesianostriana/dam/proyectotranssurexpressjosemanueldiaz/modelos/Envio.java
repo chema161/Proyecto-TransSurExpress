@@ -1,8 +1,7 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos;
 
 import java.util.List;
-
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Envio {
 
+	@Id @GeneratedValue
 	private Long id;
 	private String codigo;
 	private String origen;

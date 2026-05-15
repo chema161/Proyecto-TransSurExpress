@@ -1,11 +1,7 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos;
 
 import java.time.LocalDateTime;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class EnvioVehiculo {
 
+	@Id @GeneratedValue
 	private Long id;
 	private LocalDateTime fecha;
 	private String lugar;

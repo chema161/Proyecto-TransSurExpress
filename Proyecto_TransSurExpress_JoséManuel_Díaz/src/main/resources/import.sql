@@ -5,7 +5,7 @@ INSERT INTO vehiculo (matricula, capacidad) VALUES ('9012-GHI', 3500.0);
 INSERT INTO vehiculo (matricula, capacidad) VALUES ('3456-JKL', 1500.0);
 
 -- 2. Insertar Conductores (Dependen de Vehículos -> vehiculo_id)
-INSERT INTO conductor (nombre, experiencia, vehiculo_id) VALUES ('Paco Gómez', 5, 1);
+INSERT INTO conductor (nombre, experiencia, vehiculo_id) VALUES ('José Díaz', 5, 1);
 INSERT INTO conductor (nombre, experiencia, vehiculo_id) VALUES ('Laura Sánchez', 12, 2);
 INSERT INTO conductor (nombre, experiencia, vehiculo_id) VALUES ('Carlos Ruiz', 2, 3);
 INSERT INTO conductor (nombre, experiencia, vehiculo_id) VALUES ('Ana Martín', 8, 4);
