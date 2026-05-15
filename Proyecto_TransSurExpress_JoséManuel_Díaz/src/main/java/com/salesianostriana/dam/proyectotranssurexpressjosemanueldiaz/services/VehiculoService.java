@@ -10,10 +10,20 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class VehiculoService {
+	
     private final VehiculoRepository repository;
 
-    public List<Vehiculo> findAll() { return repository.findAll(); }
-    public Optional<Vehiculo> findById(Long id) { return repository.findById(id); }
-    public Vehiculo save(Vehiculo vehiculo) { return repository.save(vehiculo); }
-    public void deleteById(Long id) { repository.deleteById(id); }
+    public List<Vehiculo> findAll() { 
+    	return repository.findAll(); 
+    }
+    public Optional<Vehiculo> findById(Long id) { 
+    	return repository.findById(id); 
+    }
+    public Vehiculo save(Vehiculo vehiculo) { 
+    	return repository.save(vehiculo); 
+    }
+    public void deleteById(Long id) { 
+    	repository.deleteById(id);  
+    }
+    
 }

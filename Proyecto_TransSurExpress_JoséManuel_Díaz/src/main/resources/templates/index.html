@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransSur Express - Inicio</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="bi bi-truck me-2"></i>TransSur Express
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/}">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/envios}">Envíos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/vehiculos}">Vehículos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/conductores}">Conductores</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/rutas}">Rutas</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="p-5 mb-4 bg-white rounded-3 shadow-sm text-center">
+            <div class="container-fluid py-3">
+                <h1 class="display-5 fw-bold text-primary">Logística Avanzada</h1>
+                <p class="col-md-8 mx-auto fs-5 text-muted">
+                    Bienvenido al panel de control de TransSur Express. Gestiona tus envíos, controla la flota de vehículos y asigna rutas a tus conductores de forma eficiente.
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 shadow-sm border-0 text-center p-3">
+                    <div class="card-body">
+                        <i class="bi bi-box-seam display-4 text-primary mb-3"></i>
+                        <h5 class="card-title">Envíos</h5>
+                        <p class="card-text text-muted">Gestión de paquetes, estados y cálculo de costes.</p>
+                        <a th:href="@{/envios}" class="btn btn-outline-primary mt-2">Gestionar Envíos</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 shadow-sm border-0 text-center p-3">
+                    <div class="card-body">
+                        <i class="bi bi-truck display-4 text-success mb-3"></i>
+                        <h5 class="card-title">Vehículos</h5>
+                        <p class="card-text text-muted">Control de la flota, matrículas y capacidades.</p>
+                        <a th:href="@{/vehiculos}" class="btn btn-outline-success mt-2">Gestionar Vehículos</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 shadow-sm border-0 text-center p-3">
+                    <div class="card-body">
+                        <i class="bi bi-person-badge display-4 text-warning mb-3"></i>
+                        <h5 class="card-title">Conductores</h5>
+                        <p class="card-text text-muted">Administración de la plantilla y asignación a vehículos.</p>
+                        <a th:href="@{/conductores}" class="btn btn-outline-warning mt-2">Gestionar Conductores</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 shadow-sm border-0 text-center p-3">
+                    <div class="card-body">
+                        <i class="bi bi-signpost-split display-4 text-danger mb-3"></i>
+                        <h5 class="card-title">Rutas</h5>
+                        <p class="card-text text-muted">Planificación de trayectos y seguimiento del paquete.</p>
+                        <a th:href="@{/rutas}" class="btn btn-outline-danger mt-2">Gestionar Rutas</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
