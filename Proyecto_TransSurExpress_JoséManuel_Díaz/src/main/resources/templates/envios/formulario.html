@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransSur Express - Crear Envío</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-primary mb-4">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}"><i class="bi bi-truck me-2"></i>TransSur Express</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-success text-white py-3">
+                        <h4 class="card-title mb-0"><i class="bi bi-plus-circle me-2"></i>Crear Nuevo Envío de Raíz</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        
+                        <form th:action="@{/envios/guardar}" th:object="${envio}" method="POST">
+                            <div class="mb-3">
+                                <label for="codigo" class="form-label fw-bold">Código de Envío</label>
+                                <input type="text" class="form-control" id="codigo" th:field="*{codigo}" placeholder="Ej: ENV-999" required>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="origen" class="form-label fw-bold">Origen</label>
+                                    <input type="text" class="form-control" id="origen" th:field="*{origen}" placeholder="Ciudad origen" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="destino" class="form-label fw-bold">Destino</label>
+                                    <input type="text" class="form-control" id="destino" th:field="*{destino}" placeholder="Ciudad destino" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="peso" class="form-label fw-bold">Peso</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.01" class="form-control" id="peso" th:field="*{peso}" required>
+                                        <span class="input-group-text">kg</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="coste" class="form-label fw-bold">Coste Base</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.01" class="form-control" id="coste" th:field="*{coste}" required>
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2 mt-4">
+                                <a th:href="@{/envios}" class="btn btn-outline-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-success"><i class="bi bi-save me-1"></i> Registrar Envío</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
