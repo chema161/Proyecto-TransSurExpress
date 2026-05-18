@@ -32,6 +32,11 @@ public class EnvioController {
         return "redirect:/envios";
     }
 
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model) {
+        service.findById(id).ifPresent(envio -> model.addAttribute("envio", envio));
+        return "envios/formulario";
+    }
 
     
 }
