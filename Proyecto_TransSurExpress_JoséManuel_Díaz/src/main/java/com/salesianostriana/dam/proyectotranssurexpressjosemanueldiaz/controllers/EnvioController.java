@@ -38,5 +38,10 @@ public class EnvioController {
         return "envios/formulario";
     }
 
+    @GetMapping("/borrar/{id}")
+    public String borrarEnvio(@PathVariable Long id) {
+        service.deleteById(id);
+        return "redirect:/envios";
+    }
     
 }
