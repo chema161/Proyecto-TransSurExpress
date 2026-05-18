@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TransSur Express - Formulario Envío</title>
+    <title>TransSur Express - Formulario Completo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
@@ -50,11 +50,25 @@
                                 </div>
                             </div>
                             
-                            <div class="d-flex justify-content-end gap-2">
-                                <a th:href="@{/envios}" class="btn btn-outline-secondary">Cancelar</a>
-                                <button type="submit" class="btn" th:classappend="${envio.id == null} ? 'btn-success' : 'btn-warning'"
-                                        th:text="${envio.id == null} ? 'Registrar Envío' : 'Actualizar Datos'">
-                                </button>
+                            <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                                
+                                <div>
+                                    <a th:if="${envio.id != null}" 
+                                       th:href="@{/envios/borrar/{id}(id=${envio.id})}" 
+                                       class="btn btn-danger"
+                                       th:data-codigo="${envio.codigo}"
+                                       onclick="return solicitarConfirmacion(this.getAttribute('data-codigo'));">
+                                        <i class="bi bi-trash3-fill me-1"></i> Eliminar Envío
+                                    </a>
+                                </div>
+                                
+                                <div class="d-flex gap-2">
+                                    <a th:href="@{/envios}" class="btn btn-outline-secondary">Cancelar</a>
+                                    <button type="submit" class="btn" th:classappend="${envio.id == null} ? 'btn-success' : 'btn-warning'"
+                                            th:text="${envio.id == null} ? 'Registrar Envío' : 'Actualizar Datos'">
+                                    </button>
+                                </div>
+                                
                             </div>
                         </form>
                     </div>
@@ -62,5 +76,11 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function solicitarConfirmacion(codigo) {
+            return confirm("¿Estás seguro de que quieres eliminar de forma el envío " + codigo + "?");
+        }
+    </script>
 </body>
 </html>
