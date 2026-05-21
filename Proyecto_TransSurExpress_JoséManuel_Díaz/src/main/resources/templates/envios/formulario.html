@@ -27,26 +27,26 @@
                             
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Código de Envío</label>
-                                <input type="text" class="form-control" th:field="*{codigo}" th:readonly="${envio.id != null}" required>
+                                <input type="text" class="form-control" th:field="*{codigo}" th:readonly="${envio.id != null}" placeholder="Ej: 12345678" required>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Origen</label>
-                                    <input type="text" class="form-control" th:field="*{origen}" required>
+                                    <input type="text" class="form-control" th:field="*{origen}" placeholder="Ej: Madrid" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Destino</label>
-                                    <input type="text" class="form-control" th:field="*{destino}" required>
+                                    <input type="text" class="form-control" th:field="*{destino}" placeholder="Ej: Castilleja" required>
                                 </div>
                             </div>
                             <div class="row mb-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Peso (kg)</label>
-                                    <input type="number" step="0.01" class="form-control" th:field="*{peso}" required>
+                                    <input type="number" step="0.01" class="form-control" th:field="*{peso}" placeholder="0.00" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Coste (€)</label>
-                                    <input type="number" step="0.01" class="form-control" th:field="*{coste}" required>
+                                    <input type="number" step="0.01" class="form-control" th:field="*{coste}" placeholder="0.00" required>
                                 </div>
                             </div>
                             
