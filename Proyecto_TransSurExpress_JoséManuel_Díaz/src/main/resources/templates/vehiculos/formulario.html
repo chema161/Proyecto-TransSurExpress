@@ -12,15 +12,22 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card shadow border-0">
-                    <div class="card-header bg-success text-white py-3">
-                        <h4 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Registrar Nuevo Vehículo</h4>
+                    
+                    <div class="card-header py-3" th:classappend="${vehiculo.id == null} ? 'bg-success text-white' : 'bg-warning text-dark'">
+                        <h4 class="mb-0">
+                            <i th:class="${vehiculo.id == null} ? 'bi bi-plus-circle me-2' : 'bi bi-pencil-square me-2'"></i>
+                            <span th:text="${vehiculo.id == null} ? 'Registrar Nuevo Vehículo' : 'Modificar Datos del Vehículo'"></span>
+                        </h4>
                     </div>
+                    
                     <div class="card-body p-4">
                         <form th:action="@{/vehiculos/guardar}" th:object="${vehiculo}" method="POST">
                             
+                            <input type="hidden" th:field="*{id}" />
+                            
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Matrícula</label>
-                                <input type="text" class="form-control text-uppercase" th:field="*{matricula}" placeholder="Ej: 1234-ABC" required>
+                                <input type="text" class="form-control text-uppercase" th:field="*{matricula}" th:readonly="${vehiculo.id != null}" placeholder="Ej: 1234-ABC" required>
                             </div>
                             
                             <div class="mb-4">
@@ -33,7 +40,9 @@
                             
                             <div class="d-flex justify-content-end gap-2">
                                 <a th:href="@{/vehiculos}" class="btn btn-outline-secondary">Cancelar</a>
-                                <button type="submit" class="btn btn-success">Registrar Vehículo</button>
+                                <button type="submit" class="btn" th:classappend="${vehiculo.id == null} ? 'btn-success' : 'btn-warning'"
+                                        th:text="${vehiculo.id == null} ? 'Registrar Vehículo' : 'Actualizar Datos'">
+                                </button>
                             </div>
                         </form>
                     </div>
