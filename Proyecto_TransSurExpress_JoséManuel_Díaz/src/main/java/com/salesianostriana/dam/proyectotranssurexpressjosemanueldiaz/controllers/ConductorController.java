@@ -4,6 +4,9 @@ import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.Co
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.ConductorService;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.VehiculoService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,25 +26,32 @@ public class ConductorController {
     }
 
     @GetMapping("/nuevo")
-    public String mostrarFormularioNuevo(Model model) {
+    public String nuevoConductor(Model model) {
         model.addAttribute("conductor", new Conductor());
         model.addAttribute("vehiculos", vehiculoService.findAll());
         return "conductores/formulario";
     }
 
+
     @PostMapping("/guardar")
     public String guardarConductor(@ModelAttribute("conductor") Conductor conductor) {
         service.save(conductor);
         return "redirect:/conductores";
-    }
-
+    } 
+    
     @GetMapping("/editar/{id}")
-    public String mostrarFormularioEditar(@PathVariable Long id, Model model) {
-        service.findById(id).ifPresent(conductor -> model.addAttribute("conductor", conductor));
+    public String editarConductor(@PathVariable Long id, Model model) {     
+        Optional<Conductor> conductorOpt = service.findById(id);
+        
+        if (conductorOpt.isPresent()) {
+            model.addAttribute("conductor", conductorOpt.get());
+        } else {
+            return "redirect:/conductores"; 
+        } 
         model.addAttribute("vehiculos", vehiculoService.findAll());
         return "conductores/formulario";
-    }
-
+    }  
+    
     @GetMapping("/borrar/{id}")
     public String borrarConductor(@PathVariable Long id) {
         service.deleteById(id);

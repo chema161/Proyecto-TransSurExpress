@@ -1,7 +1,6 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos;
 
 import jakarta.persistence.*;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

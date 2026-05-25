@@ -12,33 +12,47 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card shadow border-0">
-                    <div class="card-header bg-success text-white py-3">
-                        <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Dar de Alta Nuevo Conductor</h4>
+                    
+                    <div class="card-header py-3" th:classappend="${conductor.id == null} ? 'bg-success text-white' : 'bg-warning text-dark'">
+                        <h4 class="mb-0">
+                            <i th:class="${conductor.id == null} ? 'bi bi-person-plus-fill me-2' : 'bi bi-pencil-square me-2'"></i>
+                            <span th:text="${conductor.id == null} ? 'Dar de Alta Nuevo Conductor' : 'Modificar Ficha del Conductor'"></span>
+                        </h4>
                     </div>
+                    
                     <div class="card-body p-4">
                         <form th:action="@{/conductores/guardar}" th:object="${conductor}" method="POST">
                             
+                            <input type="hidden" th:field="*{id}" />
+                            
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Nombre Completo</label>
-                                <input type="text" class="form-control" th:field="*{nombre}" placeholder="Ej: Juan Pérez Gómez" required>
+                                <input type="text" class="form-control" th:field="*{nombre}" th:readonly="${conductor.id != null}" placeholder="Ej: Fernando Lopez Borrego" required>
                             </div>
                             
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Años de Experiencia</label>
-                                <input type="number" class="form-control" th:field="*{experiencia}" placeholder="Ej: 5" min="0" required>
+                                <input type="number" class="form-control" th:field="*{experiencia}" min="0" placeholder="Ej: 5" required>
                             </div>
 
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">Asignar Vehículo Inicial</label>
-                                <select class="form-select" th:field="*{vehiculo}">
-                                    <option value="">-- Sin vehículo asignado temporalmente --</option>
-                                    <option th:each="v : ${vehiculos}" th:value="${v.id}" th:text="${v.matricula}"></option>
-                                </select>
-                            </div>
+							<div class="mb-4">
+							    <label class="form-label fw-bold">Vehículo Asignado</label>
+							    <select class="form-select" name="vehiculo">
+							        <option value="">-- Sin vehículo asignado temporalmente --</option>
+							        
+							        <option th:each="v : ${vehiculos}" 
+							                th:value="${v.id}" 
+							                th:text="${v.matricula}"
+							                th:selected="${conductor.vehiculo != null && conductor.vehiculo.id == v.id}">
+							        </option>
+							    </select>
+							</div>
                             
                             <div class="d-flex justify-content-end gap-2">
                                 <a th:href="@{/conductores}" class="btn btn-outline-secondary">Cancelar</a>
-                                <button type="submit" class="btn btn-success">Registrar Conductor</button>
+                                <button type="submit" class="btn" th:classappend="${conductor.id == null} ? 'btn-success' : 'btn-warning'"
+                                        th:text="${conductor.id == null} ? 'Registrar Conductor' : 'Actualizar Ficha'">
+                                </button>
                             </div>
                         </form>
                     </div>
