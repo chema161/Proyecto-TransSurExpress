@@ -2,109 +2,88 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>TransSur Express - Planificar Ruta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransSur Express - Planificar Servicio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/}"><i class="bi bi-truck me-2"></i>TransSur Express</a>
+            <a th:href="@{/operaciones}" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left"></i> Volver a la lista</a>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 600px;">
+        <div class="card shadow border-0 mb-4">
+            <div class="card-header bg-success text-white py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-calendar-plus me-2"></i>Nueva Planificación de Ruta</h4>
+            </div>
+            <div class="card-body p-4">
                 
-                <div th:if="${error != null}" class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert">
-                    <i class="bi bi-exclamation-octagon-fill me-2"></i>
-                    <strong th:text="${error}"></strong>
-                    <button type="submit" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span th:text="${error}">Mensaje de error</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
 
-                <div class="card shadow border-0">
-                    <div class="card-header bg-success text-white py-3">
-                        <h4 class="mb-0"><i class="bi bi-pin-map-fill me-2"></i>Planificar Nueva Asignación Logística</h4>
+                <form th:action="@{/operaciones/guardar}" th:object="${operacion}" method="POST">
+                    
+                    <input type="hidden" th:field="*{id}" />
+
+                    <div class="mb-3">
+                        <label for="envio" class="form-label fw-semibold">Seleccionar Envío / Mercancía:</label>
+                        <select th:field="*{envio}" id="envio" class="form-select" required>
+                            <option value="">-- Elige un envío pendiente --</option>
+                            <option th:each="ev : ${envios}" 
+                                    th:value="${ev.id}" 
+                                    th:text="${ev.codigo + ' (Origen: ' + ev.origen + ' - Destino: ' + ev.destino + ')'}">
+                                ENV-001
+                            </option>
+                        </select>
                     </div>
-                    <div class="card-body p-4">
-                        <form th:action="@{/operaciones/guardar}" th:object="${operacion}" method="POST">
-							<input type="hidden" th:field="*{id}" /> 
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Seleccionar Envío </label>
-                                <select class="form-select" th:field="*{envio}" id="selectEnvio" required>
-                                    <option value="">-- Seleccione paquete por Código (Peso) --</option>
-                                    <option th:each="e : ${envios}" th:value="${e.id}" 
-                                            th:data-peso="${e.peso}"
-                                            th:text="${e.codigo} + ' (Origen: ' + ${e.origen} + ' - Peso: ' + ${e.peso} + 'kg)'">
-                                    </option>
-                                </select>
-                            </div>
 
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Asignar Vehículo de la Flota</label>
-                                <select class="form-select" th:field="*{vehiculo}" required>
-                                    <option value="">-- Seleccione Vehículo (Capacidad) --</option>
-                                    <option th:each="v : ${vehiculos}" th:value="${v.id}" 
-                                            th:text="${v.matricula} + ' (Capacidad Máx: ' + ${v.capacidad} + 'kg)'">
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Fecha del Trayecto</label>
-                                    <input type="date" class="form-control" th:field="*{fecha}" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Estado Inicial</label>
-                                    <select class="form-select" th:field="*{estado}" required>
-                                        <option th:each="est : ${T(com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.EstadoEnvio).values()}" 
-                                                th:value="${est}" th:text="${est}">
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Punto de Control (Lugar)</label>
-                                    <input type="text" class="form-control" th:field="*{lugar}" placeholder="Ej: Hub Central Madrid" required>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <label class="form-label fw-bold">Distancia Estimada</label>
-                                    <div class="input-group">
-                                        <input type="number" step="0.01" class="form-control" th:field="*{distancia}" id="inputDistancia" placeholder="0.0" min="1" required>
-                                        <span class="input-group-text">km</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="p-3 bg-light rounded border mb-4 text-center">
-                                <span class="text-muted small d-block">Previsualización de Coste Estimado del Envío</span>
-                                <h3 class="text-success mb-0 fw-bold"><span id="previewCoste">0.00</span> €</h3>
-                            </div>
-
-                            <div class="d-flex justify-content-end gap-2">
-                                <a th:href="@:/operaciones" class="btn btn-outline-secondary">Cancelar</a>
-                                <button type="submit" class="btn btn-success">Confirmar y Despachar</button>
-                            </div>
-                        </form>
+                    <div class="mb-3">
+                        <label for="vehiculo" class="form-label fw-semibold">Asignar Vehículo de la Flota:</label>
+                        <select th:field="*{vehiculo}" id="vehiculo" class="form-select" required>
+                            <option value="">-- Elige un vehículo disponible --</option>
+                            <option th:each="vh : ${vehiculos}" 
+                                    th:value="${vh.id}" 
+                                    th:text="${vh.matricula + ' (Capacidad máx: ' + vh.capacidad + ' kg)'}">
+                                1234-BBB
+                            </option>
+                        </select>
                     </div>
-                </div>
+
+                    <div class="mb-3">
+                        <label for="fecha" class="form-label fw-semibold">Fecha del Servicio:</label>
+                        <input type="date" th:field="*{fecha}" id="fecha" class="form-select" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="ubicacionActual" class="form-label fw-semibold">Ubicación Inicial / Actual:</label>
+                        <input type="text" th:field="*{ubicacionActual}" id="ubicacionActual" class="form-control" placeholder="Ej. Almacén Central Sevilla" required />
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="distancia" class="form-label fw-semibold">Distancia Estimada (km):</label>
+                        <input type="number" step="0.1" th:field="*{distancia}" id="distancia" class="form-control" placeholder="Ej. 120.5" required />
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success fw-bold py-2 shadow-sm">
+                            <i class="bi bi-check-circle me-2"></i>Confirmar y Planificar Ruta
+                        </button>
+                        <a th:href="@{/operaciones}" class="btn btn-light py-2">Cancelar</a>
+                    </div>
+
+                </form>
             </div>
         </div>
     </div>
 
-    <script>
-        const selectEnvio = document.getElementById('selectEnvio');
-        const inputDistancia = document.getElementById('inputDistancia');
-        const previewCoste = document.getElementById('previewCoste');
-
-        function calcularCosteDinamico() {
-            const opcionSeleccionada = selectEnvio.options[selectEnvio.selectedIndex];
-            const peso = opcionSeleccionada ? parseFloat(opcionSeleccionada.getAttribute('data-peso')) : 0;
-            const distancia = parseFloat(inputDistancia.value) || 0;
-            const costeFinal = peso * distancia * 0.02;
-            previewCoste.textContent = costeFinal.toFixed(2);
-        }
-
-        selectEnvio.addEventListener('change', calcularCosteDinamico);
-        inputDistancia.addEventListener('input', calcularCosteDinamico);
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

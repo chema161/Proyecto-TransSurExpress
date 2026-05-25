@@ -1,18 +1,28 @@
 
-INSERT INTO vehiculo (matricula, capacidad) VALUES ('1234-ABC', 1500.0);
-INSERT INTO vehiculo (matricula, capacidad) VALUES ('5678-DEF', 12000.0);
-INSERT INTO vehiculo (matricula, capacidad) VALUES ('9012-GHI', 3500.0);
-INSERT INTO vehiculo (matricula, capacidad) VALUES ('3456-JKL', 1500.0);
+INSERT INTO vehiculo (id, matricula, capacidad) VALUES (1, '1234-BBB', 1500.0);
+INSERT INTO vehiculo (id, matricula, capacidad) VALUES (2, '5678-CXC', 3500.0);
+INSERT INTO vehiculo (id, matricula, capacidad) VALUES (3, '9101-DXD', 12000.0);
+INSERT INTO vehiculo (id, matricula, capacidad) VALUES (4, '4321-FFF', 2000.0);
 
-INSERT INTO conductor (nombre, experiencia, vehiculo_id) VALUES ('José Díaz', 5, 1);
-INSERT INTO conductor (nombre, experiencia, vehiculo_id) VALUES ('Laura Sánchez', 12, 2);
-INSERT INTO conductor (nombre, experiencia, vehiculo_id) VALUES ('Carlos Ruiz', 2, 3);
-INSERT INTO conductor (nombre, experiencia, vehiculo_id) VALUES ('Ana Martín', 8, 4);
-INSERT INTO conductor (nombre, experiencia, vehiculo_id) VALUES ('Luis López', 1, 1); 
+INSERT INTO conductor (id, nombre, experiencia, vehiculo_id) VALUES (1, 'Juan Pérez Gómez', 5, 1);
+INSERT INTO conductor (id, nombre, experiencia, vehiculo_id) VALUES (2, 'María López Torres', 8, 2);
+INSERT INTO conductor (id, nombre, experiencia, vehiculo_id) VALUES (3, 'Carlos Mendoza Ruiz', 12, 3);
+INSERT INTO conductor (id, nombre, experiencia, vehiculo_id) VALUES (4, 'Ana Silva Ortiz', 2, NULL);
 
-INSERT INTO envio (codigo, origen, destino, peso, coste) VALUES ('ENV-2023-001', 'Sevilla', 'Madrid', 120.5, 45.50);
-INSERT INTO envio (codigo, origen, destino, peso, coste) VALUES ('ENV-2023-002', 'Huelva', 'Barcelona', 450.0, 150.00);
-INSERT INTO envio (codigo, origen, destino, peso, coste) VALUES ('ENV-2023-003', 'Cádiz', 'Valencia', 25.0, 15.75);
+INSERT INTO envio (id, codigo, origen, destino, peso, coste) VALUES (1, 'ENV-2026-001', 'Sevilla', 'Madrid', 45.5, 120.00);
+INSERT INTO envio (id, codigo, origen, destino, peso, coste) VALUES (2, 'ENV-2026-002', 'Málaga', 'Barcelona', 180.0, 450.50);
+INSERT INTO envio (id, codigo, origen, destino, peso, coste) VALUES (3, 'ENV-2026-003', 'Cádiz', 'Valencia', 320.0, 680.00);
+INSERT INTO envio (id, codigo, origen, destino, peso, coste) VALUES (4, 'ENV-2026-004', 'Huelva', 'Bilbao', 15.0, 75.25);
+INSERT INTO envio (id, codigo, origen, destino, peso, coste) VALUES (5, 'ENV-2026-005', 'Córdoba', 'Zaragoza', 540.0, 1150.00);
+
+INSERT INTO envio_vehiculo (id, fecha, envio_id, vehiculo_id, ubicacion_actual, distancia, estado_envio) 
+VALUES (1, '2026-05-25', 1, 1, 'Manzanares', 210.5, 'EN_TRANSITO');
+
+INSERT INTO envio_vehiculo (id, fecha, envio_id, vehiculo_id, ubicacion_actual, distancia, estado_envio) 
+VALUES (2, '2026-05-25', 2, 2, 'Antequera', 45.0, 'EN_TRANSITO');
+
+INSERT INTO envio_vehiculo (id, fecha, envio_id, vehiculo_id, ubicacion_actual, distancia, estado_envio) 
+VALUES (3, '2026-05-24', 3, 3, 'Valencia (Destino)', 680.0, 'ENTREGADO');
 
 INSERT INTO envio_vehiculo (estado, fecha, lugar, envio_id, vehiculo_id) 
 VALUES ('PREPARADO', '2023-11-01 08:00:00', 'Almacén Central Sevilla', 1, 1);
@@ -20,7 +30,7 @@ VALUES ('PREPARADO', '2023-11-01 08:00:00', 'Almacén Central Sevilla', 1, 1);
 INSERT INTO envio_vehiculo (estado, fecha, lugar, envio_id, vehiculo_id) 
 VALUES ('EN RUTA', '2023-11-01 14:30:00', 'Centro Logístico Córdoba', 1, 2);
 
-INSERT INTO envio_vehiculo (estado, fecha, lugar, envio_id, vehiculo_id) 
+INSERT INTO envio_vehiculo (estado, fecha, lugar, envio_id, vehiculo_id)
 VALUES ('EN REPARTO', '2023-11-02 09:15:00', 'Delegación Sur Madrid', 1, 3);
 
 INSERT INTO envio_vehiculo (estado, fecha, lugar, envio_id, vehiculo_id) 
