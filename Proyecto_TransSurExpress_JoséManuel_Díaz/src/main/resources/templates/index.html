@@ -3,100 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TransSur Express - Inicio</title>
-    
+    <title>TransSur Express - Panel de Control</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .card-counter {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-counter:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
         <div class="container">
-            <a class="navbar-brand" th:href="@{/}">
+            <a class="navbar-brand fw-bold" th:href="@{/}">
                 <i class="bi bi-truck me-2"></i>TransSur Express
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/}">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/envios}">Envíos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/vehiculos}">Vehículos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/conductores}">Conductores</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/rutas}">Rutas</a>
-                    </li>
+                <ul class="navbar-nav ms-auto fw-medium">
+                    <li class="nav-item"><a class="nav-item nav-link" th:href="@{/envios}">Envíos</a></li>
+                    <li class="nav-item"><a class="nav-item nav-link" th:href="@{/vehiculos}">Vehículos</a></li>
+                    <li class="nav-item"><a class="nav-item nav-link" th:href="@{/conductores}">Conductores</a></li>
+                    <li class="nav-item"><a class="nav-item nav-link active" th:href="@{/operaciones}">Operaciones</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="p-5 mb-4 bg-white rounded-3 shadow-sm text-center">
-            <div class="container-fluid py-3">
-                <h1 class="display-5 fw-bold text-primary">TransSur Express</h1>
-                <p class="col-md-8 mx-auto fs-5 text-muted">
-                    Bienvenido al panel de control de TransSur Express. Gestiona tus envíos, controla la flota de vehículos y asigna rutas a tus conductores de forma eficiente.
-                </p>
+    <div class="container my-5">
+        
+        <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-white border shadow-sm">
+            <div class="col-lg-8 px-0">
+                <h1 class="display-5 fw-bold text-primary">Sistema de Logística Avanzada</h1>
+                <p class="lead my-3 text-muted">Bienvenido al panel central de TransSur Express. Desde aquí podrás monitorizar la flota en tiempo real, asignar conductores, planificar las hojas de ruta y controlar el flujo de mercancías de forma centralizada.</p>
             </div>
         </div>
 
+        <h3 class="text-secondary mb-4"><i class="bi bi-speedometer2 me-2"></i>Estado de la Empresa</h3>
         <div class="row g-4 mb-5">
             
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 shadow-sm border-0 text-center p-3">
-                    <div class="card-body">
-                        <i class="bi bi-box-seam display-4 text-primary mb-3"></i>
-                        <h5 class="card-title">Envíos</h5>
-                        <p class="card-text text-muted">Gestión de paquetes, estados y cálculo de costes.</p>
-                        <a th:href="@{/envios}" class="btn btn-outline-primary mt-2">Gestionar Envíos</a>
+            <div class="col-6 col-lg-3">
+                <div class="card h-100 border-0 bg-primary text-white shadow-sm card-counter">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-uppercase text-white-50 small fw-bold">Envíos Registrados</h6>
+                            <h2 class="display-6 fw-bold mb-0" th:text="${totalEnvios}">0</h2>
+                        </div>
+                        <i class="bi bi-box-seam display-4 text-white-50"></i>
+                    </div>
+                    <div class="card-footer bg-black bg-opacity-10 border-0 py-2">
+                        <a th:href="@{/envios}" class="text-white text-decoration-none small d-flex justify-content-between align-items-center">
+                            Ver listado <i class="bi bi-arrow-right-short"></i>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 shadow-sm border-0 text-center p-3">
-                    <div class="card-body">
-                        <i class="bi bi-truck display-4 text-success mb-3"></i>
-                        <h5 class="card-title">Vehículos</h5>
-                        <p class="card-text text-muted">Control de la flota, matrículas y capacidades.</p>
-                        <a th:href="@{/vehiculos}" class="btn btn-outline-success mt-2">Gestionar Vehículos</a>
+            <div class="col-6 col-lg-3">
+                <div class="card h-100 border-0 bg-success text-white shadow-sm card-counter">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-uppercase text-white-50 small fw-bold">Vehículos en Flota</h6>
+                            <h2 class="display-6 fw-bold mb-0" th:text="${totalVehiculos}">0</h2>
+                        </div>
+                        <i class="bi bi-truck display-4 text-white-50"></i>
+                    </div>
+                    <div class="card-footer bg-black bg-opacity-10 border-0 py-2">
+                        <a th:href="@{/vehiculos}" class="text-white text-decoration-none small d-flex justify-content-between align-items-center">
+                            Ver flota <i class="bi bi-arrow-right-short"></i>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 shadow-sm border-0 text-center p-3">
-                    <div class="card-body">
-                        <i class="bi bi-person-badge display-4 text-warning mb-3"></i>
-                        <h5 class="card-title">Conductores</h5>
-                        <p class="card-text text-muted">Administración de la plantilla y asignación a vehículos.</p>
-                        <a th:href="@{/conductores}" class="btn btn-outline-warning mt-2">Gestionar Conductores</a>
+            <div class="col-6 col-lg-3">
+                <div class="card h-100 border-0 bg-warning text-dark shadow-sm card-counter">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-uppercase text-black-50 small fw-bold">Conductores</h6>
+                            <h2 class="display-6 fw-bold mb-0" th:text="${totalConductores}">0</h2>
+                        </div>
+                        <i class="bi bi-person-badge display-4 text-black-50"></i>
+                    </div>
+                    <div class="card-footer bg-black bg-opacity-10 border-0 py-2">
+                        <a th:href="@{/conductores}" class="text-dark text-decoration-none small d-flex justify-content-between align-items-center">
+                            Ver plantilla <i class="bi bi-arrow-right-short"></i>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 shadow-sm border-0 text-center p-3">
-                    <div class="card-body">
-                        <i class="bi bi-signpost-split display-4 text-danger mb-3"></i>
-                        <h5 class="card-title">Rutas</h5>
-                        <p class="card-text text-muted">Planificación de trayectos y seguimiento del paquete.</p>
-                        <a th:href="@{/rutas}" class="btn btn-outline-danger mt-2">Gestionar Rutas</a>
+            <div class="col-6 col-lg-3">
+                <div class="card h-100 border-0 bg-danger text-white shadow-sm card-counter">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-uppercase text-white-50 small fw-bold">Servicios / Rutas</h6>
+                            <h2 class="display-6 fw-bold mb-0" th:text="${rutasActivas}">0</h2>
+                        </div>
+                        <i class="bi bi-journal-check display-4 text-white-50"></i>
+                    </div>
+                    <div class="card-footer bg-black bg-opacity-10 border-0 py-2">
+                        <a th:href="@{/operaciones}" class="text-white text-decoration-none small d-flex justify-content-between align-items-center">
+                            Seguimiento <i class="bi bi-arrow-right-short"></i>
+                        </a>
                     </div>
                 </div>
             </div>
 
         </div>
+
+        <h3 class="text-secondary mb-4"><i class="bi bi-grid-fill me-2"></i>Módulos de Gestión</h3>
+        <div class="row g-4">
+            
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 p-3 bg-white">
+                    <div class="card-body text-center">
+                        <div class="p-3 bg-primary bg-opacity-10 rounded-circle d-inline-block mb-3">
+                            <i class="bi bi-box-seam text-primary fs-3"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Gestión de Envíos</h5>
+                        <p class="card-text text-muted small">Registra nuevos paquetes, gestiona el peso de la mercancía, puntos de origen y destinos.</p>
+                        <a th:href="@{/envios}" class="btn btn-outline-primary btn-sm w-100 mt-2">Acceder al Módulo</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 p-3 bg-white">
+                    <div class="card-body text-center">
+                        <div class="p-3 bg-success bg-opacity-10 rounded-circle d-inline-block mb-3">
+                            <i class="bi bi-person-video2 text-success fs-3"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Flota y Personal</h5>
+                        <p class="card-text text-muted small">Asigna conductores a vehículos específicos y controla las capacidades de carga máxima.</p>
+                        <div class="d-flex gap-2 mt-2">
+                            <a th:href="@{/vehiculos}" class="btn btn-outline-success btn-sm w-50">Vehículos</a>
+                            <a th:href="@{/conductores}" class="btn btn-outline-success btn-sm w-50">Conductores</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 p-3 bg-white">
+                    <div class="card-body text-center">
+                        <div class="p-3 bg-danger bg-opacity-10 rounded-circle d-inline-block mb-3">
+                            <i class="bi bi-geo-alt text-danger fs-3"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Planificación de Rutas</h5>
+                        <p class="card-text text-muted small">El motor principal: controla estados, calcula costes automáticos y evita solapamientos de fechas.</p>
+                        <a th:href="@{/operaciones}" class="btn btn-outline-danger btn-sm w-100 mt-2">Planificar / Seguimiento</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

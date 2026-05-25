@@ -1,30 +1,33 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos;
 
-import java.time.LocalDateTime;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "envio_vehiculo")
 public class EnvioVehiculo {
 
-	@Id @GeneratedValue
-	private Long id;
-	private LocalDateTime fecha;
-	private String lugar;
-	
-	@ManyToOne
-	private Envio envio;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne 
-	private Vehiculo vehiculo;
-	
-	@Enumerated(EnumType.STRING)
-	private EstadoEnvio estado; 
+    @ManyToOne
+    @JoinColumn(name = "envio_id")
+    private Envio envio;
+
+    @ManyToOne
+    @JoinColumn(name = "vehiculo_id")
+    private Vehiculo vehiculo;
+
+    @Enumerated(EnumType.STRING)
+    private EstadoEnvio estado; 
+
+    private LocalDate fecha;  
+    private String lugar;    
+    private Double distancia; 
 }
