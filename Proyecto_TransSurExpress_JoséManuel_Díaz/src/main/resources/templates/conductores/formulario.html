@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransSur Express - Formulario Conductor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-success text-white py-3">
+                        <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Dar de Alta Nuevo Conductor</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/conductores/guardar}" th:object="${conductor}" method="POST">
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Nombre Completo</label>
+                                <input type="text" class="form-control" th:field="*{nombre}" placeholder="Ej: Juan Pérez Gómez" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Años de Experiencia</label>
+                                <input type="number" class="form-control" th:field="*{experiencia}" placeholder="Ej: 5" min="0" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Asignar Vehículo Inicial</label>
+                                <select class="form-select" th:field="*{vehiculo}">
+                                    <option value="">-- Sin vehículo asignado temporalmente --</option>
+                                    <option th:each="v : ${vehiculos}" th:value="${v.id}" th:text="${v.matricula}"></option>
+                                </select>
+                            </div>
+                            
+                            <div class="d-flex justify-content-end gap-2">
+                                <a th:href="@{/conductores}" class="btn btn-outline-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-success">Registrar Conductor</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
