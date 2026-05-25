@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ConductorController {
 
+	
     private final ConductorService service;
     private final VehiculoService vehiculoService;
 
@@ -25,6 +26,12 @@ public class ConductorController {
         return "conductores/lista";
     }
 
+    @GetMapping("/test")
+    @ResponseBody
+    public String test() {
+        return "<h1>¡EL CONTROLADOR FUNCIONA!</h1> <p>Si ves esto, el problema es el HTML.</p>";
+    }
+    
     @GetMapping("/nuevo")
     public String nuevoConductor(Model model) {
         model.addAttribute("conductor", new Conductor());

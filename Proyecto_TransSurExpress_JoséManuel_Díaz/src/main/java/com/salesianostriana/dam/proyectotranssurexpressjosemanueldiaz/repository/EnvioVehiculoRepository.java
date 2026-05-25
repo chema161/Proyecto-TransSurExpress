@@ -2,18 +2,20 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repositor
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.EnvioVehiculo;
-import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.EstadoEnvio;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Long> {
-    // Consultar rutas por estado
+
     List<EnvioVehiculo> findByEstado(EstadoEnvio estado);
 
-    // Consultar rutas por envío
     List<EnvioVehiculo> findByEnvioId(Long envioId);
 
-    // Consultar rutas por vehículo
     List<EnvioVehiculo> findByVehiculoId(Long vehiculoId);
+    
+    boolean existsByVehiculoAndFechaAndEstadoIn(Vehiculo vehiculo, LocalDate fecha, List<EstadoEnvio> estados);
+    
+    List<EnvioVehiculo> findByEnvioIdOrderByFechaAsc(Long envioId);
 }
