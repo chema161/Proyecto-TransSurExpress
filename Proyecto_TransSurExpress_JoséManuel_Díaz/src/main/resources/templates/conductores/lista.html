@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransSur Express - Plantilla de Conductores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/}"><i class="bi bi-truck me-2"></i>TransSur Express</a>
+            <a th:href="@{/}" class="btn btn-outline-light btn-sm"><i class="bi bi-house-door me-1"></i> Volver al inicio</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-dark mb-0"><i class="bi bi-person-vcard me-2 text-primary"></i>Plantilla de Conductores</h2>
+            <a th:href="@{/conductores/nuevo}" class="btn btn-success shadow-sm">
+                <i class="bi bi-plus-lg me-1"></i> Alta de Conductor
+            </a>
+        </div>
+
+        <div class="card shadow border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0 text-center align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID Registro</th>
+                                <th>Nombre Completo</th>
+                                <th>Experiencia Laboral</th>
+                                <th>Vehículo Asignado</th>
+                                <th>Acciones de Gestión</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="conductor : ${conductores}">
+                                <td th:text="${conductor.id}" class="text-muted small"></td>
+                                <td th:text="${conductor.nombre}" class="fw-bold"></td>
+                                <td><span th:text="${conductor.experiencia}"></span> años</td>
+                                <td>
+                                    <span th:if="${conductor.vehiculo != null}" 
+                                          th:text="${conductor.vehiculo.matricula}" 
+                                          class="badge bg-info text-dark fw-bold text-uppercase p-2">
+                                    </span>
+                                    <span th:unless="${conductor.vehiculo != null}" 
+                                          class="text-muted fst-italic small">
+                                        <i class="bi bi-exclamation-triangle me-1 text-warning"></i> Sin vehículo
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group gap-1">
+                                        <a th:href="@{/conductores/editar/{id}(id=${conductor.id})}" class="btn btn-warning btn-sm shadow-sm" title="Editar">
+                                            <i class="bi bi-pencil-square text-dark"></i>
+                                        </a>
+                                        <a th:href="@{/conductores/borrar/{id}(id=${conductor.id})}" 
+                                           class="btn btn-danger btn-sm shadow-sm" 
+                                           th:data-nombre="${conductor.nombre}"
+                                           onclick="return confirmarBorradoConductor(this.getAttribute('data-nombre'));" title="Eliminar">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(conductores)}">
+                                <td colspan="5" class="text-muted p-4">No hay personal de conducción registrado en el sistema H2.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmarBorradoConductor(nombre) {
+            return confirm("⚠️ Control de Personal ⚠️\n\n¿Estás completamente seguro de que deseas dar de baja al conductor " + nombre + "?\nEsta acción eliminará su ficha de la base de datos.");
+        }
+    </script>
+</body>
+</html>
