@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TransSur Express - Formulario Conductor</title>
+    <title>TransSur Express - Gestión de Conductor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
@@ -27,7 +27,7 @@
                             
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Nombre Completo</label>
-                                <input type="text" class="form-control" th:field="*{nombre}" th:readonly="${conductor.id != null}" placeholder="Ej: Fernando Lopez Borrego" required>
+                                <input type="text" class="form-control" th:field="*{nombre}" th:readonly="${conductor.id != null}" placeholder="Ej: Juan Pérez" required>
                             </div>
                             
                             <div class="mb-3">
@@ -35,24 +35,37 @@
                                 <input type="number" class="form-control" th:field="*{experiencia}" min="0" placeholder="Ej: 5" required>
                             </div>
 
-							<div class="mb-4">
-							    <label class="form-label fw-bold">Vehículo Asignado</label>
-							    <select class="form-select" name="vehiculo">
-							        <option value="">-- Sin vehículo asignado temporalmente --</option>
-							        
-							        <option th:each="v : ${vehiculos}" 
-							                th:value="${v.id}" 
-							                th:text="${v.matricula}"
-							                th:selected="${conductor.vehiculo != null && conductor.vehiculo.id == v.id}">
-							        </option>
-							    </select>
-							</div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Vehículo Asignado</label>
+                                <select class="form-select" name="vehiculo">
+                                    <option value="">-- Sin vehículo asignado temporalmente --</option>
+                                    <option th:each="v : ${vehiculos}" 
+                                            th:value="${v.id}" 
+                                            th:text="${v.matricula}"
+                                            th:selected="${conductor.vehiculo != null && conductor.vehiculo.id == v.id}">
+                                    </option>
+                                </select>
+                            </div>
                             
-                            <div class="d-flex justify-content-end gap-2">
-                                <a th:href="@{/conductores}" class="btn btn-outline-secondary">Cancelar</a>
-                                <button type="submit" class="btn" th:classappend="${conductor.id == null} ? 'btn-success' : 'btn-warning'"
-                                        th:text="${conductor.id == null} ? 'Registrar Conductor' : 'Actualizar Ficha'">
-                                </button>
+                            <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                                
+                                <div>
+                                    <a th:if="${conductor.id != null}" 
+                                       th:href="@{/conductores/borrar/{id}(id=${conductor.id})}" 
+                                       class="btn btn-danger"
+                                       th:data-nombre="${conductor.nombre}"
+                                       onclick="return asegurarBajaPersonal(this.getAttribute('data-nombre'));">
+                                        <i class="bi bi-person-x-fill me-1"></i> Dar de Baja
+                                    </a>
+                                </div>
+                                
+                                <div class="d-flex gap-2">
+                                    <a th:href="@{/conductores}" class="btn btn-outline-secondary">Cancelar</a>
+                                    <button type="submit" class="btn" th:classappend="${conductor.id == null} ? 'btn-success' : 'btn-warning'"
+                                            th:text="${conductor.id == null} ? 'Registrar Conductor' : 'Actualizar Ficha'">
+                                    </button>
+                                </div>
+                                
                             </div>
                         </form>
                     </div>
@@ -60,5 +73,11 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function asegurarBajaPersonal(nombreCompleto) {
+            return confirm("¿Estás completamente seguro de que deseas dar de baja al conductor '" + nombreCompleto + "'?\nEsta acción eliminará su ficha de la base de datos.");
+        }
+    </script>
 </body>
 </html>
