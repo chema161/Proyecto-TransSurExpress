@@ -48,7 +48,7 @@ public class OperacionService {
         envioRepo.save(op.getEnvio());      
 
         operacionRepo.save(op);
-    }
+    } 
 
     public List<EnvioVehiculo> obtenerHistorialPorEnvio(Long envioId) {
         return operacionRepo.findByEnvioIdOrderByFechaAsc(envioId);

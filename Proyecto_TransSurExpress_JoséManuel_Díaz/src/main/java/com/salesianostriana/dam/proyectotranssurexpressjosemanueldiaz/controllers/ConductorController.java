@@ -25,12 +25,6 @@ public class ConductorController {
         model.addAttribute("conductores", service.findAll());
         return "conductores/lista";
     }
-
-    @GetMapping("/test")
-    @ResponseBody
-    public String test() {
-        return "<h1>¡EL CONTROLADOR FUNCIONA!</h1> <p>Si ves esto, el problema es el HTML.</p>";
-    }
     
     @GetMapping("/nuevo")
     public String nuevoConductor(Model model) {

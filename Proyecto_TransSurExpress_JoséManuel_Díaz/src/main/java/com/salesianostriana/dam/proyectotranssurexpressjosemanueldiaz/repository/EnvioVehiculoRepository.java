@@ -18,4 +18,5 @@ public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Lo
     boolean existsByVehiculoAndFechaAndEstadoIn(Vehiculo vehiculo, LocalDate fecha, List<EstadoEnvio> estados);
     
     List<EnvioVehiculo> findByEnvioIdOrderByFechaAsc(Long envioId);
+    
 }
