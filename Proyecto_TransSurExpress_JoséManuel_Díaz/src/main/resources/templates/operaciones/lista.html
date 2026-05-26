@@ -16,7 +16,7 @@
             </a>
             <div class="d-flex gap-2">
                 <a th:href="@{/}" class="btn btn-outline-light btn-sm">
-                    <i class="bi bi-house-door me-1"></i>Panel Principal
+                    <i class="bi bi-house-door me-1"></i>Volver al inicio
                 </a>
             </div>
         </div>
@@ -27,9 +27,9 @@
             <h2 class="text-primary mb-0 fw-bold">
                 <i class="bi bi-calendar-check me-2"></i>Seguimiento y Planificación de Rutas
             </h2>
-            <a th:href="@{/operaciones/nueva}" class="btn btn-success fw-semibold shadow-sm">
-                <i class="bi bi-calendar-plus me-2"></i>Planificar Servicio
-            </a>
+			<a th:href="@{/operaciones/nueva}" class="btn btn-success fw-semibold shadow-sm">
+			    <i class="bi bi-calendar-plus me-2"></i>Planificar Servicio
+			</a>
         </div>
 
         <div class="card shadow border-0">
@@ -49,7 +49,7 @@
                         </thead>
                         <tbody>
                             <tr th:each="op : ${operaciones}">
-                                <td th:text="${#temporals.format(op.fecha, 'dd/MM/yyyy')}">25/05/2026</td>
+                                <td th:text="${#temporals.format(op.fecha, 'dd/MM/yyyy')}">26/05/2026</td>
                                 <td th:text="${op.envio != null ? op.envio.codigo : 'Sin Código'}" class="fw-bold text-primary">ENV-000</td>
                                 <td th:text="${op.vehiculo != null ? op.vehiculo.matricula : 'Sin Vehículo'}">1234-BBB</td>
                                 <td th:text="${op.ubicacionActual}">Ubicación</td>

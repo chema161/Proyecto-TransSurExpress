@@ -22,7 +22,10 @@ INSERT INTO envio_vehiculo (id, fecha, envio_id, vehiculo_id, ubicacion_actual, 
 VALUES (2, '2026-05-25', 2, 2, 'Antequera', 45.0, 'EN_TRANSITO');
 
 INSERT INTO envio_vehiculo (id, fecha, envio_id, vehiculo_id, ubicacion_actual, distancia, estado_envio) 
-VALUES (3, '2026-05-24', 3, 3, 'Valencia (Destino)', 680.0, 'ENTREGADO');
+VALUES (3, '2026-05-24', 3, 3, 'Valencia', 680.0, 'ENTREGADO');
+
+INSERT INTO envio_vehiculo (id, fecha, envio_id, vehiculo_id, ubicacion_actual, distancia, estado_envio)
+VALUES (3, '2026-05-22', 4, 4, 'Sevilla' ,111.0, 'ENTREGADO')
 
 INSERT INTO envio_vehiculo (estado, fecha, lugar, envio_id, vehiculo_id) 
 VALUES ('PREPARADO', '2023-11-01 08:00:00', 'Almacén Central Sevilla', 1, 1);
@@ -44,3 +47,13 @@ VALUES ('EN RUTA', '2023-11-05 18:00:00', 'Centro Logístico Sevilla', 2, 2);
 
 INSERT INTO envio_vehiculo (estado, fecha, lugar, envio_id, vehiculo_id) 
 VALUES ('PREPARADO', '2023-11-10 07:30:00', 'Oficina Cádiz', 3, 1);
+
+ALTER SEQUENCE conductor_seq RESTART WITH 10;
+ALTER SEQUENCE vehiculo_seq RESTART WITH 10;
+ALTER SEQUENCE envio_seq RESTART WITH 10;
+ALTER SEQUENCE envio_vehiculo_seq RESTART WITH 10;
+
+ALTER TABLE conductor ALTER COLUMN id RESTART WITH 10;
+ALTER TABLE vehiculo ALTER COLUMN id RESTART WITH 10;
+ALTER TABLE envio ALTER COLUMN id RESTART WITH 10;
+ALTER TABLE envio_vehiculo ALTER COLUMN id RESTART WITH 10;

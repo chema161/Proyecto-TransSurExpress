@@ -12,69 +12,65 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" th:href="@{/}"><i class="bi bi-truck me-2"></i>TransSur Express</a>
-            <a th:href="@{/operaciones}" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left"></i> Volver a la lista</a>
+            <a th:href="@{/operaciones}" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left"></i> Volver</a>
         </div>
     </nav>
 
     <div class="container" style="max-width: 600px;">
         <div class="card shadow border-0 mb-4">
             <div class="card-header bg-success text-white py-3">
-                <h4 class="mb-0 fw-bold"><i class="bi bi-calendar-plus me-2"></i>Nueva Planificación de Ruta</h4>
+                <h4 class="mb-0 fw-bold"><i class="bi bi-calendar-plus me-2"></i>Planificación y Gestión de Estado</h4>
             </div>
             <div class="card-body p-4">
                 
-                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    <span th:text="${error}">Mensaje de error</span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-
                 <form th:action="@{/operaciones/guardar}" th:object="${operacion}" method="POST">
                     
                     <input type="hidden" th:field="*{id}" />
 
                     <div class="mb-3">
-                        <label for="envio" class="form-label fw-semibold">Seleccionar Envío / Mercancía:</label>
+                        <label for="envio" class="form-label fw-semibold">Asignar Envío (Código):</label>
                         <select th:field="*{envio}" id="envio" class="form-select" required>
-                            <option value="">-- Elige un envío pendiente --</option>
-                            <option th:each="ev : ${envios}" 
-                                    th:value="${ev.id}" 
-                                    th:text="${ev.codigo + ' (Origen: ' + ev.origen + ' - Destino: ' + ev.destino + ')'}">
-                                ENV-001
-                            </option>
+                            <option value="">-- Selecciona el envío --</option>
+                            <option th:each="ev : ${envios}" th:value="${ev.id}" th:text="${ev.codigo}"></option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label for="vehiculo" class="form-label fw-semibold">Asignar Vehículo de la Flota:</label>
+                        <label for="vehiculo" class="form-label fw-semibold">Asignar Vehículo (Matrícula):</label>
                         <select th:field="*{vehiculo}" id="vehiculo" class="form-select" required>
-                            <option value="">-- Elige un vehículo disponible --</option>
-                            <option th:each="vh : ${vehiculos}" 
-                                    th:value="${vh.id}" 
-                                    th:text="${vh.matricula + ' (Capacidad máx: ' + vh.capacidad + ' kg)'}">
-                                1234-BBB
-                            </option>
+                            <option value="">-- Selecciona el vehículo --</option>
+                            <option th:each="vh : ${vehiculos}" th:value="${vh.id}" th:text="${vh.matricula}"></option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label for="fecha" class="form-label fw-semibold">Fecha del Servicio:</label>
-                        <input type="date" th:field="*{fecha}" id="fecha" class="form-select" required />
+                        <label for="fecha" class="form-label fw-semibold">Fecha:</label>
+                        <input type="date" th:field="*{fecha}" id="fecha" class="form-control" required />
                     </div>
 
                     <div class="mb-3">
-                        <label for="ubicacionActual" class="form-label fw-semibold">Ubicación Inicial / Actual:</label>
-                        <input type="text" th:field="*{ubicacionActual}" id="ubicacionActual" class="form-control" placeholder="Ej. Almacén Central Sevilla" required />
+                        <label for="ubicacionActual" class="form-label fw-semibold">Punto de Control / Lugar:</label>
+                        <input type="text" th:field="*{ubicacionActual}" id="ubicacionActual" class="form-control" placeholder="Ej. Almacén Central o Aeropuerto" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="distancia" class="form-label fw-semibold">Distancia del segmento (km):</label>
+                        <input type="number" step="0.1" th:field="*{distancia}" id="distancia" class="form-control" required />
                     </div>
 
                     <div class="mb-4">
-                        <label for="distancia" class="form-label fw-semibold">Distancia Estimada (km):</label>
-                        <input type="number" step="0.1" th:field="*{distancia}" id="distancia" class="form-control" placeholder="Ej. 120.5" required />
+                        <label for="estadoEnvio" class="form-label fw-semibold">Estado del Seguimiento:</label>
+                        <select th:field="*{estadoEnvio}" id="estadoEnvio" class="form-select" required>
+                            <option value="PREPARADO">PREPARADO</option>
+                            <option value="EN_RUTA">EN RUTA</option>
+                            <option value="EN_REPARTO">EN REPARTO</option>
+                            <option value="ENTREGADO">ENTREGADO</option>
+                        </select>
                     </div>
 
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-success fw-bold py-2 shadow-sm">
-                            <i class="bi bi-check-circle me-2"></i>Confirmar y Planificar Ruta
+                            <i class="bi bi-save me-2"></i>Registrar Servicio / Estado
                         </button>
                         <a th:href="@{/operaciones}" class="btn btn-light py-2">Cancelar</a>
                     </div>
