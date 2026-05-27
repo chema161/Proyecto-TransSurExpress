@@ -43,24 +43,28 @@ public class OperacionController {
             return "operaciones/formulario";
         }
     }
-    
+
     @GetMapping("/editar/{id}")
     public String editarOperacion(@PathVariable Long id, Model model) {
-        operacionService.findById(id).ifPresent(op -> model.addAttribute("operacion", op));
+        operacionService.findById(id).ifPresentOrElse(
+            op -> model.addAttribute("operacion", op),
+            () -> model.addAttribute("operacion", new EnvioVehiculo())
+        );
         model.addAttribute("envios", envioService.findAll());
         model.addAttribute("vehiculos", vehiculoService.findAll());
         return "operaciones/formulario";
     }
-    
+
     @GetMapping("/borrar/{id}")
     public String borrarOperacion(@PathVariable Long id) {
         operacionService.deleteById(id);
         return "redirect:/operaciones";
     }
-    
+
     @GetMapping("/historial/{envioId}")
     public String verHistorialEnvio(@PathVariable Long envioId, Model model) {
         model.addAttribute("historial", operacionService.obtenerHistorialPorEnvio(envioId));
+        model.addAttribute("envioId", envioId);
         return "operaciones/historial_envio";
     }
 }
