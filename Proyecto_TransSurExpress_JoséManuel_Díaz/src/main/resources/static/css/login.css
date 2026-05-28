@@ -1,0 +1,213 @@
+:root {
+    --azul:       #1a56db;
+    --azul-osc:   #0f3a8a;
+    --gris-osc:   #111827;
+    --gris-med:   #374151;
+    --gris-claro: #f3f4f6;
+    --verde:      #059669;
+    --error:      #dc2626;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gris-osc);
+    background-image: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 30px,
+        rgba(26,86,219,0.03) 30px,
+        rgba(26,86,219,0.03) 31px
+    );
+}
+
+.panel-login {
+    width: 420px;
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem 3rem;
+    position: relative;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+    animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.panel-login::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--azul), var(--azul-osc));
+    border-radius: 16px 16px 0 0;
+}
+
+.login-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--gris-osc);
+}
+
+.login-logo i {
+    font-size: 1.5rem;
+    color: var(--azul);
+}
+
+.login-logo strong {
+    color: var(--azul);
+}
+
+.login-header {
+    margin-bottom: 2rem;
+}
+
+.login-header .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--azul);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.login-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--gris-osc);
+    letter-spacing: -0.5px;
+}
+
+.login-header p {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 0.3rem;
+}
+
+.alerta-error, .alerta-logout {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.alerta-error {
+    background: #fef2f2;
+    color: var(--error);
+    border: 1px solid #fecaca;
+    animation: shake 0.4s ease both;
+}
+
+.alerta-logout {
+    background: #f0fdf4;
+    color: var(--verde);
+    border: 1px solid #bbf7d0;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-6px); }
+    40%       { transform: translateX(6px); }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px); }
+}
+
+.campo {
+    margin-bottom: 1.25rem;
+}
+
+.campo label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--gris-med);
+    margin-bottom: 0.5rem;
+}
+
+.campo-input-wrap {
+    position: relative;
+}
+
+.campo-icono {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 1rem;
+    pointer-events: none;
+    transition: color 0.2s;
+}
+
+.campo input {
+    width: 100%;
+    padding: 0.85rem 1rem 0.85rem 2.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--gris-osc);
+    background: var(--gris-claro);
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+}
+
+.campo input:focus {
+    border-color: var(--azul);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(26,86,219,0.1);
+}
+
+.campo-input-wrap:focus-within .campo-icono {
+    color: var(--azul);
+}
+
+.btn-acceder {
+    width: 100%;
+    padding: 0.95rem;
+    background: linear-gradient(135deg, var(--azul) 0%, var(--azul-osc) 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-acceder:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(26,86,219,0.35);
+}
+
+.btn-acceder:active { transform: translateY(0); }
+
+.login-footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
