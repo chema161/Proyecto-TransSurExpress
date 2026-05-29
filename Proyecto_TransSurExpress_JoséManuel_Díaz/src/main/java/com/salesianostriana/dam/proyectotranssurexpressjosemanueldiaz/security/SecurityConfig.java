@@ -39,6 +39,14 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login**", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+
+                // Solo ADMIN puede editar y borrar
+                .requestMatchers("/vehiculos/editar/**", "/vehiculos/borrar/**").hasRole("ADMINISTRADOR")
+                .requestMatchers("/conductores/editar/**", "/conductores/borrar/**").hasRole("ADMINISTRADOR")
+                .requestMatchers("/envios/editar/**", "/envios/borrar/**").hasRole("ADMINISTRADOR")
+                .requestMatchers("/operaciones/editar/**", "/operaciones/borrar/**").hasRole("ADMINISTRADOR")
+
+                // Ambos roles pueden crear y consultar
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

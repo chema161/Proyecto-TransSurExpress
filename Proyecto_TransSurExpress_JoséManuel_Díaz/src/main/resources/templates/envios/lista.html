@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,7 +47,7 @@
                                 <th>Destino</th>
                                 <th>Peso</th>
                                 <th>Coste</th>
-                                <th>Acciones</th>
+                                <th sec:authorize="hasRole('ADMINISTRADOR')">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -57,11 +58,11 @@
                                 <td th:text="${envio.destino}"></td>
                                 <td><span th:text="${envio.peso}"></span> kg</td>
                                 <td><span th:text="${envio.coste}"></span> €</td>
-                                <td>
+                                <td sec:authorize="hasRole('ADMINISTRADOR')">
                                     <a th:href="@{/envios/editar/{id}(id=${envio.id})}" class="btn btn-warning btn-sm">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <a th:href="@{/envios/borrar/{id}(id=${envio.id})}" 
+                                    <a th:href="@{/envios/borrar/{id}(id=${envio.id})}"
                                        class="btn btn-danger btn-sm"
                                        onclick="return confirm('¿Estás seguro de que deseas eliminar este envío? Esta acción no se puede deshacer.');">
                                         <i class="bi bi-trash"></i>

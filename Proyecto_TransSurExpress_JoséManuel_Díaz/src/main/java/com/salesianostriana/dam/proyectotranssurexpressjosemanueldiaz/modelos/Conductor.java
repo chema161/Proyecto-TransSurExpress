@@ -10,15 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity 
+@Entity
 public class Conductor {
-	
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String nombre;
-	private Integer experiencia;
-	
-	@ManyToOne
-	private Vehiculo vehiculo;
-	
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nombre;
+    private Integer experiencia;
+
+    @ManyToOne
+    private Vehiculo vehiculo;
 }

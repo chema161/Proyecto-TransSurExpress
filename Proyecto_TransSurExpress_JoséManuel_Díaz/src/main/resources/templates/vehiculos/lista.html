@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,7 +44,7 @@
                                 <th>ID Registro</th>
                                 <th>Matrícula Oficial</th>
                                 <th>Capacidad de Carga</th>
-                                <th>Acciones de Gestión</th>
+                                <th sec:authorize="hasRole('ADMINISTRADOR')">Acciones de Gestión</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,13 +52,13 @@
                                 <td th:text="${vehiculo.id}" class="text-muted small"></td>
                                 <td th:text="${vehiculo.matricula}" class="fw-bold text-uppercase text-success"></td>
                                 <td><span th:text="${vehiculo.capacidad}"></span> kg</td>
-                                <td>
+                                <td sec:authorize="hasRole('ADMINISTRADOR')">
                                     <div class="btn-group gap-1">
                                         <a th:href="@{/vehiculos/editar/{id}(id=${vehiculo.id})}" class="btn btn-warning btn-sm shadow-sm" title="Editar">
                                             <i class="bi bi-pencil-square text-dark"></i>
                                         </a>
-                                        <a th:href="@{/vehiculos/borrar/{id}(id=${vehiculo.id})}" 
-                                           class="btn btn-danger btn-sm shadow-sm" 
+                                        <a th:href="@{/vehiculos/borrar/{id}(id=${vehiculo.id})}"
+                                           class="btn btn-danger btn-sm shadow-sm"
                                            th:data-matricula="${vehiculo.matricula}"
                                            onclick="return confirmarBorradoVehiculo(this.getAttribute('data-matricula'));" title="Eliminar">
                                             <i class="bi bi-trash3-fill"></i>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,14 +71,18 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a th:href="@{/operaciones/editar/{id}(id=${op.id})}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                    <!-- Editar y borrar solo para ADMIN -->
+                                    <a sec:authorize="hasRole('ADMINISTRADOR')"
+                                       th:href="@{/operaciones/editar/{id}(id=${op.id})}" class="btn btn-sm btn-outline-primary" title="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <a th:href="@{/operaciones/borrar/{id}(id=${op.id})}"
+                                    <a sec:authorize="hasRole('ADMINISTRADOR')"
+                                       th:href="@{/operaciones/borrar/{id}(id=${op.id})}"
                                        class="btn btn-sm btn-outline-danger"
                                        onclick="return confirm('¿Seguro que quieres eliminar esta planificación?');" title="Eliminar">
                                         <i class="bi bi-trash"></i>
                                     </a>
+                                    <!-- Historial visible para todos -->
                                     <a th:href="@{/operaciones/historial/{id}(id=${op.envio.id})}" class="btn btn-sm btn-outline-secondary" title="Ver historial del envío">
                                         <i class="bi bi-clock-history"></i>
                                     </a>

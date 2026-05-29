@@ -27,7 +27,7 @@ INSERT INTO envio_vehiculo (id, estado, fecha, lugar, distancia, envio_id, vehic
 INSERT INTO envio_vehiculo (id, estado, fecha, lugar, distancia, envio_id, vehiculo_id) VALUES (5, 'EN_RUTA',    '2026-05-24', 'Aeropuerto de Zaragoza',    300.0, 5, 5);
 
 -- Reiniciar secuencias
-ALTER TABLE conductor ALTER COLUMN id RESTART WITH 10;
 ALTER TABLE vehiculo ALTER COLUMN id RESTART WITH 10;
+ALTER TABLE conductor ALTER COLUMN id RESTART WITH 10;
 ALTER TABLE envio ALTER COLUMN id RESTART WITH 10;
 ALTER TABLE envio_vehiculo ALTER COLUMN id RESTART WITH 10;

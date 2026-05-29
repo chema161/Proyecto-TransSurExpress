@@ -14,14 +14,14 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Vehiculo {
 
-	@Id @GeneratedValue
-	private Long id;
-	private String matricula;
-	private Double capacidad;
-	
-	@OneToMany(mappedBy = "vehiculo")
-	private List<EnvioVehiculo> envios;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String matricula;
+    private Double capacidad;
 
-	@OneToMany(mappedBy = "vehiculo")
-	private List<Conductor> conductores;
+    @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EnvioVehiculo> envios;
+
+    @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Conductor> conductores;
 }
