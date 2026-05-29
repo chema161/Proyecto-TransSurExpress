@@ -25,5 +25,5 @@ public class Conductor {
 
     @ManyToOne
     private Vehiculo vehiculo;
-    // El vehículo es opcional: un conductor puede estar sin vehículo asignado
+  
 }
