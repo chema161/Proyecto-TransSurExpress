@@ -12,7 +12,17 @@
     <nav class="navbar navbar-dark bg-primary mb-4">
         <div class="container">
             <a class="navbar-brand" th:href="@{/}"><i class="bi bi-truck me-2"></i>TransSur Express</a>
-            <a th:href="@{/}" class="btn btn-outline-light btn-sm"><i class="bi bi-house-door me-1"></i> Volver al inicio</a>
+            <div class="d-flex gap-2">
+                <a th:href="@{/operaciones}" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i>Operaciones
+                </a>
+                <a th:href="@{/}" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-house-door me-1"></i>Volver al inicio
+                </a>
+                <a th:href="@{/vehiculos}" class="btn btn-outline-light btn-sm">
+                    Vehículos<i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
         </div>
     </nav>
 

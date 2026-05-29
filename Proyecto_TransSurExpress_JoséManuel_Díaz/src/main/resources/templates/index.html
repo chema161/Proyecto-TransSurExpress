@@ -27,11 +27,16 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto fw-medium">
+                <ul class="navbar-nav ms-auto fw-medium align-items-center">
                     <li class="nav-item"><a class="nav-item nav-link" th:href="@{/envios}">Envíos</a></li>
                     <li class="nav-item"><a class="nav-item nav-link" th:href="@{/vehiculos}">Vehículos</a></li>
                     <li class="nav-item"><a class="nav-item nav-link" th:href="@{/conductores}">Conductores</a></li>
                     <li class="nav-item"><a class="nav-item nav-link active" th:href="@{/operaciones}">Operaciones</a></li>
+                    <li class="nav-item ms-2">
+                        <a th:href="@{/login}" class="btn btn-outline-light btn-sm">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
