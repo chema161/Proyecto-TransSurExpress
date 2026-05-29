@@ -19,7 +19,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-
         registry.addConverter(new Converter<String, Envio>() {
             @Override
             public Envio convert(String id) {
@@ -27,7 +26,6 @@ public class WebConfig implements WebMvcConfigurer {
                 return envioRepository.findById(Long.parseLong(id)).orElse(null);
             }
         });
-
         registry.addConverter(new Converter<String, Vehiculo>() {
             @Override
             public Vehiculo convert(String id) {

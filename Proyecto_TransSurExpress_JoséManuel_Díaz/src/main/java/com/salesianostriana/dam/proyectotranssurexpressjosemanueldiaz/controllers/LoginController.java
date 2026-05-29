@@ -8,6 +8,7 @@ public class LoginController {
 
     @GetMapping("/login")
     public String mostrarLogin() {
-        return "login"; 
+        System.out.println(">>> LOGIN CONTROLLER EJECUTADO <<<");
+        return "login";
     }
 }
