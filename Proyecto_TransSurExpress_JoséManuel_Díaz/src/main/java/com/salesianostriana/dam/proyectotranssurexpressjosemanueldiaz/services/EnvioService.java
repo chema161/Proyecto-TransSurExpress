@@ -2,22 +2,22 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services;
 
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.Envio;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repository.EnvioRepository;
-import lombok.RequiredArgsConstructor;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.base.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-public class EnvioService {
-    private final EnvioRepository repository;
+public class EnvioService extends BaseServiceImpl<Envio, Long, EnvioRepository> {
 
-    public List<Envio> findAll() { return repository.findAll(); }
-    public Optional<Envio> findById(Long id) { return repository.findById(id); }
-    
-    public Envio save(Envio envio) { 
-        return repository.save(envio); 
+    public List<Envio> findByCodigo(String codigo) {
+        return repository.findByCodigoContainingIgnoreCase(codigo);
     }
-    
-    public void deleteById(Long id) { repository.deleteById(id); }
+
+    public List<Envio> findByOrigenODestino(String texto) {
+        return repository.findByOrigenContainingIgnoreCaseOrDestinoContainingIgnoreCase(texto, texto);
+    }
+
+    public List<Envio> findPesadosMasQue(Double kg) {
+        return repository.findByPesoGreaterThan(kg);
+    }
 }
