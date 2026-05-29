@@ -2,9 +2,11 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.controlle
 
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.Vehiculo;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.VehiculoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -27,7 +29,12 @@ public class VehiculoController {
     }
 
     @PostMapping("/guardar")
-    public String guardarVehiculo(@ModelAttribute("vehiculo") Vehiculo vehiculo) {
+    public String guardarVehiculo(@Valid @ModelAttribute("vehiculo") Vehiculo vehiculo,
+                                  BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            // Volvemos al formulario mostrando los errores de validación
+            return "vehiculos/formulario";
+        }
         service.save(vehiculo);
         return "redirect:/vehiculos";
     }
@@ -43,5 +50,4 @@ public class VehiculoController {
         service.deleteById(id);
         return "redirect:/vehiculos";
     }
-    
 }

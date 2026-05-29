@@ -1,10 +1,13 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.controllers;
 
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.CodigoEnvioDuplicadoException;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.Envio;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.EnvioService;
+import org.springframework.validation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -27,8 +30,21 @@ public class EnvioController {
     }
 
     @PostMapping("/guardar")
-    public String guardarEnvio(@ModelAttribute("envio") Envio envio) {
-        service.save(envio);
+    public String guardarEnvio(@Valid @ModelAttribute("envio") Envio envio,
+                               BindingResult bindingResult, Model model) {
+        // 1. Errores de validación de campos (@Valid)
+        if (bindingResult.hasErrors()) {
+            return "envios/formulario";
+        }
+
+        // 2. Lógica de negocio: código duplicado
+        try {
+            service.guardarConValidacion(envio);
+        } catch (CodigoEnvioDuplicadoException ex) {
+            model.addAttribute("error", ex.getMessage());
+            return "envios/formulario";
+        }
+
         return "redirect:/envios";
     }
 
@@ -43,5 +59,4 @@ public class EnvioController {
         service.deleteById(id);
         return "redirect:/envios";
     }
-    
 }

@@ -1,11 +1,16 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.controllers;
 
-import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.*;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.AsignacionInvalidaException;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.PesoExcedidoException;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.EnvioVehiculo;
-import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.*;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.EnvioService;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.OperacionService;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.VehiculoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -31,7 +36,16 @@ public class OperacionController {
     }
 
     @PostMapping("/guardar")
-    public String guardarOperacion(@ModelAttribute("operacion") EnvioVehiculo op, Model model) {
+    public String guardarOperacion(@Valid @ModelAttribute("operacion") EnvioVehiculo op,
+                                   BindingResult bindingResult, Model model) {
+        // 1. Errores de validación de campos (@Valid)
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("envios", envioService.findAll());
+            model.addAttribute("vehiculos", vehiculoService.findAll());
+            return "operaciones/formulario";
+        }
+
+        // 2. Lógica de negocio: peso excedido o solapamiento de fechas
         try {
             operacionService.planificarOperacion(op);
             return "redirect:/operaciones";
