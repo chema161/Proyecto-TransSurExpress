@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TransSur Express - Formulario Completo</title>
+    <title>TransSur Express - Formulario de Envío</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
@@ -12,64 +12,122 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card shadow border-0">
-                    
-                    <div class="card-header py-3" th:classappend="${envio.id == null} ? 'bg-success text-white' : 'bg-warning text-dark'">
+
+                    <div class="card-header py-3"
+                         th:classappend="${envio.id == null} ? 'bg-success text-white' : 'bg-warning text-dark'">
                         <h4 class="mb-0">
                             <i th:class="${envio.id == null} ? 'bi bi-plus-circle me-2' : 'bi bi-pencil-square me-2'"></i>
                             <span th:text="${envio.id == null} ? 'Registrar Nuevo Envío' : 'Modificar Datos del Envío'"></span>
                         </h4>
                     </div>
-                    
+
                     <div class="card-body p-4">
-                        <form th:action="@{/envios/guardar}" th:object="${envio}" method="POST">
-                            
+
+                        <!-- Error de lógica de negocio (código duplicado) -->
+                        <div th:if="${error}" class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                            <span th:text="${error}">Error</span>
+                        </div>
+
+                        <form th:action="@{/envios/guardar}" th:object="${envio}" method="POST"
+                              id="formEnvio" onsubmit="return validarFormulario()">
+
                             <input type="hidden" th:field="*{id}" />
-                            
+
+                            <!-- Código -->
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Código de Envío</label>
-                                <input type="text" class="form-control" th:field="*{codigo}" th:readonly="${envio.id != null}" placeholder="Ej: 12345678" required>
+                                <input type="text" id="codigo"
+                                       class="form-control"
+                                       th:field="*{codigo}"
+                                       th:classappend="${#fields.hasErrors('codigo')} ? 'is-invalid'"
+                                       th:readonly="${envio.id != null}"
+                                       placeholder="Ej: ENV-2026-001" />
+                                <div class="invalid-feedback"
+                                     th:if="${#fields.hasErrors('codigo')}"
+                                     th:errors="*{codigo}">Error</div>
                             </div>
+
+                            <!-- Origen / Destino -->
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Origen</label>
-                                    <input type="text" class="form-control" th:field="*{origen}" placeholder="Ej: Madrid" required>
+                                    <input type="text" id="origen"
+                                           class="form-control"
+                                           th:field="*{origen}"
+                                           th:classappend="${#fields.hasErrors('origen')} ? 'is-invalid'"
+                                           placeholder="Ej: Sevilla" />
+                                    <div class="invalid-feedback"
+                                         th:if="${#fields.hasErrors('origen')}"
+                                         th:errors="*{origen}">Error</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Destino</label>
-                                    <input type="text" class="form-control" th:field="*{destino}" placeholder="Ej: Castilleja" required>
+                                    <input type="text" id="destino"
+                                           class="form-control"
+                                           th:field="*{destino}"
+                                           th:classappend="${#fields.hasErrors('destino')} ? 'is-invalid'"
+                                           placeholder="Ej: Madrid" />
+                                    <div class="invalid-feedback"
+                                         th:if="${#fields.hasErrors('destino')}"
+                                         th:errors="*{destino}">Error</div>
                                 </div>
                             </div>
+
+                            <!-- Peso / Coste -->
                             <div class="row mb-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Peso (kg)</label>
-                                    <input type="number" step="0.01" class="form-control" th:field="*{peso}" placeholder="0.00" required>
+                                    <div class="input-group">
+                                        <input type="number" step="0.01" id="peso"
+                                               class="form-control"
+                                               th:field="*{peso}"
+                                               th:classappend="${#fields.hasErrors('peso')} ? 'is-invalid'"
+                                               placeholder="0.00" />
+                                        <span class="input-group-text">kg</span>
+                                        <div class="invalid-feedback"
+                                             th:if="${#fields.hasErrors('peso')}"
+                                             th:errors="*{peso}">Error</div>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Coste (€)</label>
-                                    <input type="number" step="0.01" class="form-control" th:field="*{coste}" placeholder="0.00" required>
+                                    <div class="input-group">
+                                        <input type="number" step="0.01" id="coste"
+                                               class="form-control"
+                                               th:field="*{coste}"
+                                               th:classappend="${#fields.hasErrors('coste')} ? 'is-invalid'"
+                                               placeholder="0.00" />
+                                        <span class="input-group-text">€</span>
+                                        <div class="invalid-feedback"
+                                             th:if="${#fields.hasErrors('coste')}"
+                                             th:errors="*{coste}">Error</div>
+                                    </div>
+                                    <div class="form-text text-muted">
+                                        <i class="bi bi-info-circle me-1"></i>Se recalcula automáticamente al asignar rutas
+                                    </div>
                                 </div>
                             </div>
-                            
+
                             <div class="d-flex justify-content-between align-items-center border-top pt-3">
-                                
                                 <div>
-                                    <a th:if="${envio.id != null}" 
-                                       th:href="@{/envios/borrar/{id}(id=${envio.id})}" 
+                                    <a th:if="${envio.id != null}"
+                                       th:href="@{/envios/borrar/{id}(id=${envio.id})}"
                                        class="btn btn-danger"
                                        th:data-codigo="${envio.codigo}"
                                        onclick="return solicitarConfirmacion(this.getAttribute('data-codigo'));">
                                         <i class="bi bi-trash3-fill me-1"></i> Eliminar Envío
                                     </a>
                                 </div>
-                                
                                 <div class="d-flex gap-2">
                                     <a th:href="@{/envios}" class="btn btn-outline-secondary">Cancelar</a>
-                                    <button type="submit" class="btn" th:classappend="${envio.id == null} ? 'btn-success' : 'btn-warning'"
+                                    <button type="submit" class="btn"
+                                            th:classappend="${envio.id == null} ? 'btn-success' : 'btn-warning'"
                                             th:text="${envio.id == null} ? 'Registrar Envío' : 'Actualizar Datos'">
                                     </button>
                                 </div>
-                                
                             </div>
+
                         </form>
                     </div>
                 </div>
@@ -78,8 +136,97 @@
     </div>
 
     <script>
+        // ── Validación frontend ─────────────────────────────────────────────────
+
+        function validarFormulario() {
+            let valido = true;
+
+            // Código (solo al crear)
+            const codigoInput = document.getElementById('codigo');
+            if (!codigoInput.readOnly) {
+                const codigo = codigoInput.value.trim();
+                if (!codigo) {
+                    mostrarError(codigoInput, 'El código de envío es obligatorio.');
+                    valido = false;
+                } else if (codigo.length < 3) {
+                    mostrarError(codigoInput, 'El código debe tener al menos 3 caracteres.');
+                    valido = false;
+                } else {
+                    quitarError(codigoInput);
+                }
+            }
+
+            // Origen
+            valido = validarTextoObligatorio('origen', 'El origen es obligatorio.') && valido;
+
+            // Destino
+            valido = validarTextoObligatorio('destino', 'El destino es obligatorio.') && valido;
+
+            // Origen ≠ Destino
+            const origen = document.getElementById('origen').value.trim().toLowerCase();
+            const destino = document.getElementById('destino').value.trim().toLowerCase();
+            if (origen && destino && origen === destino) {
+                mostrarError(document.getElementById('destino'), 'El destino no puede ser igual que el origen.');
+                valido = false;
+            }
+
+            // Peso
+            const pesoInput = document.getElementById('peso');
+            const peso = parseFloat(pesoInput.value);
+            if (!pesoInput.value) {
+                mostrarError(pesoInput, 'El peso es obligatorio.');
+                valido = false;
+            } else if (isNaN(peso) || peso <= 0) {
+                mostrarError(pesoInput, 'El peso debe ser mayor que 0.');
+                valido = false;
+            } else {
+                quitarError(pesoInput);
+            }
+
+            // Coste
+            const costeInput = document.getElementById('coste');
+            const coste = parseFloat(costeInput.value);
+            if (!costeInput.value) {
+                mostrarError(costeInput, 'El coste es obligatorio.');
+                valido = false;
+            } else if (isNaN(coste) || coste < 0) {
+                mostrarError(costeInput, 'El coste no puede ser negativo.');
+                valido = false;
+            } else {
+                quitarError(costeInput);
+            }
+
+            return valido;
+        }
+
+        function validarTextoObligatorio(id, mensaje) {
+            const input = document.getElementById(id);
+            if (!input.value.trim()) {
+                mostrarError(input, mensaje);
+                return false;
+            }
+            quitarError(input);
+            return true;
+        }
+
+        function mostrarError(input, mensaje) {
+            input.classList.add('is-invalid');
+            // Buscar el div.invalid-feedback más cercano
+            let feedback = input.nextElementSibling;
+            if (feedback && feedback.classList.contains('input-group-text')) {
+                feedback = feedback.nextElementSibling;
+            }
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.textContent = mensaje;
+            }
+        }
+
+        function quitarError(input) {
+            input.classList.remove('is-invalid');
+        }
+
         function solicitarConfirmacion(codigo) {
-            return confirm("¿Estás seguro de que deseas eliminar este envío? Esta acción no se puede deshacer.");
+            return confirm('¿Estás seguro de que deseas eliminar el envío ' + codigo + '? Esta acción no se puede deshacer.');
         }
     </script>
 </body>

@@ -12,61 +12,84 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card shadow border-0">
-                    
-                    <div class="card-header py-3" th:classappend="${conductor.id == null} ? 'bg-success text-white' : 'bg-warning text-dark'">
+
+                    <div class="card-header py-3"
+                         th:classappend="${conductor.id == null} ? 'bg-success text-white' : 'bg-warning text-dark'">
                         <h4 class="mb-0">
                             <i th:class="${conductor.id == null} ? 'bi bi-person-plus-fill me-2' : 'bi bi-pencil-square me-2'"></i>
                             <span th:text="${conductor.id == null} ? 'Dar de Alta Nuevo Conductor' : 'Modificar Ficha del Conductor'"></span>
                         </h4>
                     </div>
-                    
+
                     <div class="card-body p-4">
-                        <form th:action="@{/conductores/guardar}" th:object="${conductor}" method="POST">
-                            
+                        <form th:action="@{/conductores/guardar}" th:object="${conductor}" method="POST"
+                              id="formConductor" onsubmit="return validarFormulario()">
+
                             <input type="hidden" th:field="*{id}" />
-                            
+
+                            <!-- Nombre -->
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Nombre Completo</label>
-                                <input type="text" class="form-control" th:field="*{nombre}" th:readonly="${conductor.id != null}" placeholder="Ej: Juan Pérez" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Años de Experiencia</label>
-                                <input type="number" class="form-control" th:field="*{experiencia}" min="0" placeholder="Ej: 5" required>
+                                <input type="text" id="nombre"
+                                       class="form-control"
+                                       th:field="*{nombre}"
+                                       th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
+                                       th:readonly="${conductor.id != null}"
+                                       placeholder="Ej: Juan Pérez García" />
+                                <div class="invalid-feedback"
+                                     th:if="${#fields.hasErrors('nombre')}"
+                                     th:errors="*{nombre}">Error</div>
                             </div>
 
+                            <!-- Experiencia -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Años de Experiencia</label>
+                                <input type="number" id="experiencia"
+                                       class="form-control"
+                                       th:field="*{experiencia}"
+                                       th:classappend="${#fields.hasErrors('experiencia')} ? 'is-invalid'"
+                                       min="0" max="50"
+                                       placeholder="Ej: 5" />
+                                <div class="invalid-feedback"
+                                     th:if="${#fields.hasErrors('experiencia')}"
+                                     th:errors="*{experiencia}">Error</div>
+                            </div>
+
+                            <!-- Vehículo (opcional) -->
                             <div class="mb-4">
                                 <label class="form-label fw-bold">Vehículo Asignado</label>
-                                <select class="form-select" name="vehiculo">
+                                <select class="form-select" name="vehiculo" id="vehiculo">
                                     <option value="">-- Sin vehículo asignado temporalmente --</option>
-                                    <option th:each="v : ${vehiculos}" 
-                                            th:value="${v.id}" 
+                                    <option th:each="v : ${vehiculos}"
+                                            th:value="${v.id}"
                                             th:text="${v.matricula}"
                                             th:selected="${conductor.vehiculo != null && conductor.vehiculo.id == v.id}">
                                     </option>
                                 </select>
+                                <div class="form-text text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>Campo opcional
+                                </div>
                             </div>
-                            
+
                             <div class="d-flex justify-content-between align-items-center border-top pt-3">
-                                
                                 <div>
-                                    <a th:if="${conductor.id != null}" 
-                                       th:href="@{/conductores/borrar/{id}(id=${conductor.id})}" 
+                                    <a th:if="${conductor.id != null}"
+                                       th:href="@{/conductores/borrar/{id}(id=${conductor.id})}"
                                        class="btn btn-danger"
                                        th:data-nombre="${conductor.nombre}"
                                        onclick="return asegurarBajaPersonal(this.getAttribute('data-nombre'));">
                                         <i class="bi bi-person-x-fill me-1"></i> Dar de Baja
                                     </a>
                                 </div>
-                                
                                 <div class="d-flex gap-2">
                                     <a th:href="@{/conductores}" class="btn btn-outline-secondary">Cancelar</a>
-                                    <button type="submit" class="btn" th:classappend="${conductor.id == null} ? 'btn-success' : 'btn-warning'"
+                                    <button type="submit" class="btn"
+                                            th:classappend="${conductor.id == null} ? 'btn-success' : 'btn-warning'"
                                             th:text="${conductor.id == null} ? 'Registrar Conductor' : 'Actualizar Ficha'">
                                     </button>
                                 </div>
-                                
                             </div>
+
                         </form>
                     </div>
                 </div>
@@ -75,8 +98,63 @@
     </div>
 
     <script>
+        // ── Validación frontend ─────────────────────────────────────────────────
+
+        function validarFormulario() {
+            let valido = true;
+
+            // Nombre (solo al crear, es readonly al editar)
+            const nombreInput = document.getElementById('nombre');
+            if (!nombreInput.readOnly) {
+                const nombre = nombreInput.value.trim();
+                if (!nombre) {
+                    mostrarError(nombreInput, 'El nombre es obligatorio.');
+                    valido = false;
+                } else if (nombre.length < 3) {
+                    mostrarError(nombreInput, 'El nombre debe tener al menos 3 caracteres.');
+                    valido = false;
+                } else if (nombre.length > 100) {
+                    mostrarError(nombreInput, 'El nombre no puede superar los 100 caracteres.');
+                    valido = false;
+                } else {
+                    quitarError(nombreInput);
+                }
+            }
+
+            // Experiencia
+            const expInput = document.getElementById('experiencia');
+            const exp = parseInt(expInput.value);
+            if (expInput.value === '') {
+                mostrarError(expInput, 'Los años de experiencia son obligatorios.');
+                valido = false;
+            } else if (isNaN(exp) || exp < 0) {
+                mostrarError(expInput, 'La experiencia no puede ser negativa.');
+                valido = false;
+            } else if (exp > 50) {
+                mostrarError(expInput, 'La experiencia no puede superar los 50 años.');
+                valido = false;
+            } else {
+                quitarError(expInput);
+            }
+
+            return valido;
+        }
+
+        function mostrarError(input, mensaje) {
+            input.classList.add('is-invalid');
+            const feedback = input.nextElementSibling;
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.textContent = mensaje;
+            }
+        }
+
+        function quitarError(input) {
+            input.classList.remove('is-invalid');
+        }
+
         function asegurarBajaPersonal(nombreCompleto) {
-            return confirm("¿Estás completamente seguro de que deseas dar de baja al conductor '" + nombreCompleto + "'?\nEsta acción eliminará su ficha de la base de datos.");
+            return confirm("¿Estás completamente seguro de que deseas dar de baja al conductor '"
+                + nombreCompleto + "'?\nEsta acción eliminará su ficha de la base de datos.");
         }
     </script>
 </body>

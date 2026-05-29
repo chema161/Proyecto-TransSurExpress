@@ -12,12 +12,15 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" th:href="@{/}"><i class="bi bi-truck me-2"></i>TransSur Express</a>
-            <a th:href="@{/operaciones}" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left"></i> Volver</a>
+            <a th:href="@{/operaciones}" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
         </div>
     </nav>
 
     <div class="container" style="max-width: 600px;">
 
+        <!-- Error de lógica de negocio (peso excedido / solapamiento) -->
         <div th:if="${error}" class="alert alert-danger d-flex align-items-center mb-4 shadow-sm" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
             <span th:text="${error}">Error</span>
@@ -31,15 +34,18 @@
                     <span th:text="${operacion.id == null} ? 'Planificar Nuevo Servicio' : 'Modificar Servicio'"></span>
                 </h4>
             </div>
-            <div class="card-body p-4">
 
-                <form th:action="@{/operaciones/guardar}" th:object="${operacion}" method="POST">
+            <div class="card-body p-4">
+                <form th:action="@{/operaciones/guardar}" th:object="${operacion}" method="POST"
+                      id="formOperacion" onsubmit="return validarFormulario()">
 
                     <input type="hidden" th:field="*{id}" />
 
+                    <!-- Envío -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Asignar Envío (Código):</label>
-                        <select name="envio" class="form-select" required>
+                        <select id="envio" name="envio" class="form-select"
+                                th:classappend="${#fields.hasErrors('envio')} ? 'is-invalid'">
                             <option value="">-- Selecciona el envío --</option>
                             <option th:each="ev : ${envios}"
                                     th:value="${ev.id}"
@@ -47,11 +53,16 @@
                                     th:selected="${operacion.envio != null && operacion.envio.id == ev.id}">
                             </option>
                         </select>
+                        <div class="invalid-feedback"
+                             th:if="${#fields.hasErrors('envio')}"
+                             th:errors="*{envio}">Error</div>
                     </div>
 
+                    <!-- Vehículo -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Asignar Vehículo (Matrícula):</label>
-                        <select name="vehiculo" class="form-select" required>
+                        <select id="vehiculo" name="vehiculo" class="form-select"
+                                th:classappend="${#fields.hasErrors('vehiculo')} ? 'is-invalid'">
                             <option value="">-- Selecciona el vehículo --</option>
                             <option th:each="vh : ${vehiculos}"
                                     th:value="${vh.id}"
@@ -59,35 +70,68 @@
                                     th:selected="${operacion.vehiculo != null && operacion.vehiculo.id == vh.id}">
                             </option>
                         </select>
+                        <div class="invalid-feedback"
+                             th:if="${#fields.hasErrors('vehiculo')}"
+                             th:errors="*{vehiculo}">Error</div>
                     </div>
 
+                    <!-- Fecha -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Fecha:</label>
-                        <input type="date" th:field="*{fecha}" class="form-control" required />
+                        <input type="date" id="fecha"
+                               th:field="*{fecha}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('fecha')} ? 'is-invalid'" />
+                        <div class="invalid-feedback"
+                             th:if="${#fields.hasErrors('fecha')}"
+                             th:errors="*{fecha}">Error</div>
                     </div>
 
+                    <!-- Lugar -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Punto de Control / Lugar:</label>
-                        <input type="text" th:field="*{lugar}" class="form-control"
-                               placeholder="Ej. Almacén Central o Aeropuerto de Sevilla" required />
+                        <input type="text" id="lugar"
+                               th:field="*{lugar}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('lugar')} ? 'is-invalid'"
+                               placeholder="Ej. Almacén Central o Aeropuerto de Sevilla" />
+                        <div class="invalid-feedback"
+                             th:if="${#fields.hasErrors('lugar')}"
+                             th:errors="*{lugar}">Error</div>
                     </div>
 
+                    <!-- Distancia -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Distancia del segmento (km):</label>
-                        <input type="number" step="0.1" min="0" th:field="*{distancia}" class="form-control" required />
+                        <div class="input-group">
+                            <input type="number" step="0.1" min="0" id="distancia"
+                                   th:field="*{distancia}"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('distancia')} ? 'is-invalid'" />
+                            <span class="input-group-text">km</span>
+                            <div class="invalid-feedback"
+                                 th:if="${#fields.hasErrors('distancia')}"
+                                 th:errors="*{distancia}">Error</div>
+                        </div>
                         <div class="form-text text-muted">
                             <i class="bi bi-info-circle me-1"></i>El coste se calcula automáticamente: peso × distancia × 0,02 €
                         </div>
                     </div>
 
+                    <!-- Estado -->
                     <div class="mb-4">
                         <label class="form-label fw-semibold">Estado del Seguimiento:</label>
-                        <select th:field="*{estado}" class="form-select" required>
+                        <select id="estado" th:field="*{estado}" class="form-select"
+                                th:classappend="${#fields.hasErrors('estado')} ? 'is-invalid'">
+                            <option value="">-- Selecciona el estado --</option>
                             <option value="PREPARADO">PREPARADO</option>
                             <option value="EN_RUTA">EN RUTA</option>
                             <option value="EN_REPARTO">EN REPARTO</option>
                             <option value="ENTREGADO">ENTREGADO</option>
                         </select>
+                        <div class="invalid-feedback"
+                             th:if="${#fields.hasErrors('estado')}"
+                             th:errors="*{estado}">Error</div>
                     </div>
 
                     <div class="d-grid gap-2">
@@ -103,6 +147,88 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // ── Validación frontend ─────────────────────────────────────────────────
+
+        function validarFormulario() {
+            let valido = true;
+
+            // Envío seleccionado
+            valido = validarSelect('envio', 'Debes seleccionar un envío.') && valido;
+
+            // Vehículo seleccionado
+            valido = validarSelect('vehiculo', 'Debes seleccionar un vehículo.') && valido;
+
+            // Fecha
+            const fechaInput = document.getElementById('fecha');
+            if (!fechaInput.value) {
+                mostrarError(fechaInput, 'La fecha es obligatoria.');
+                valido = false;
+            } else {
+                quitarError(fechaInput);
+            }
+
+            // Lugar
+            const lugarInput = document.getElementById('lugar');
+            if (!lugarInput.value.trim()) {
+                mostrarError(lugarInput, 'El punto de control es obligatorio.');
+                valido = false;
+            } else if (lugarInput.value.trim().length > 200) {
+                mostrarError(lugarInput, 'El lugar no puede superar los 200 caracteres.');
+                valido = false;
+            } else {
+                quitarError(lugarInput);
+            }
+
+            // Distancia
+            const distanciaInput = document.getElementById('distancia');
+            const distancia = parseFloat(distanciaInput.value);
+            if (!distanciaInput.value) {
+                mostrarError(distanciaInput, 'La distancia es obligatoria.');
+                valido = false;
+            } else if (isNaN(distancia) || distancia <= 0) {
+                mostrarError(distanciaInput, 'La distancia debe ser mayor que 0.');
+                valido = false;
+            } else {
+                quitarError(distanciaInput);
+            }
+
+            // Estado
+            valido = validarSelect('estado', 'Debes seleccionar un estado.') && valido;
+
+            return valido;
+        }
+
+        function validarSelect(id, mensaje) {
+            const select = document.getElementById(id);
+            if (!select.value) {
+                select.classList.add('is-invalid');
+                const feedback = select.nextElementSibling;
+                if (feedback && feedback.classList.contains('invalid-feedback')) {
+                    feedback.textContent = mensaje;
+                }
+                return false;
+            }
+            select.classList.remove('is-invalid');
+            return true;
+        }
+
+        function mostrarError(input, mensaje) {
+            input.classList.add('is-invalid');
+            let feedback = input.nextElementSibling;
+            if (feedback && feedback.classList.contains('input-group-text')) {
+                feedback = feedback.nextElementSibling;
+            }
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.textContent = mensaje;
+            }
+        }
+
+        function quitarError(input) {
+            input.classList.remove('is-invalid');
+        }
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
