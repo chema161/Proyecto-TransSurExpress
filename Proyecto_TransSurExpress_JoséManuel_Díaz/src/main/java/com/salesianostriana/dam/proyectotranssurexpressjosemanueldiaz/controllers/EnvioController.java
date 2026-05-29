@@ -3,7 +3,7 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.controlle
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.CodigoEnvioDuplicadoException;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.Envio;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.EnvioService;
-import org.springframework.validation.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,7 +37,6 @@ public class EnvioController {
             return "envios/formulario";
         }
 
-        // 2. Lógica de negocio: código duplicado
         try {
             service.guardarConValidacion(envio);
         } catch (CodigoEnvioDuplicadoException ex) {
