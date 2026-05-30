@@ -13,31 +13,53 @@ import java.util.List;
 public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Long> {
 
     List<EnvioVehiculo> findByEstado(EstadoEnvio estado);
-
     List<EnvioVehiculo> findByEnvioId(Long envioId);
-
     List<EnvioVehiculo> findByVehiculoId(Long vehiculoId);
-
     List<EnvioVehiculo> findByEnvioIdOrderByFechaAsc(Long envioId);
 
-    /**
-     * Comprueba si un vehículo ya tiene asignada una ruta activa en una fecha
-     * para un envío DISTINTO al indicado.
-     * Permite múltiples tramos del mismo envío en el mismo vehículo y fecha,
-     * pero bloquea asignar ese vehículo a un envío diferente ese día.
-     */
-    boolean existsByVehiculoAndFechaAndEstadoInAndEnvioNot(
+    // ── Solapamiento ──────────────────────────────────────────────────────────
+    // Bloquea crear un tramo duplicado: mismo vehículo + misma fecha + mismo envío.
+    // Un vehículo SÍ puede llevar varios envíos distintos el mismo día.
+
+    /** Al CREAR: tramo duplicado exacto */
+    boolean existsByVehiculoAndFechaAndEnvioAndEstadoIn(
             Vehiculo vehiculo,
             LocalDate fecha,
-            List<EstadoEnvio> estados,
-            Envio envio
+            Envio envio,
+            List<EstadoEnvio> estados
     );
 
-    /**
-     * Comprueba si alguno de los conductores dados ya tiene una ruta activa
-     * a través de un vehículo DIFERENTE al indicado en la misma fecha.
-     * Evita que un conductor conduzca dos vehículos distintos el mismo día.
-     */
+    /** Al EDITAR: tramo duplicado exacto, excluyendo la operación actual */
+    boolean existsByVehiculoAndFechaAndEnvioAndEstadoInAndIdNot(
+            Vehiculo vehiculo,
+            LocalDate fecha,
+            Envio envio,
+            List<EstadoEnvio> estados,
+            Long id
+    );
+
+    // ── Exclusividad del envío ────────────────────────────────────────────────
+    // Un envío activo solo puede estar asignado a UN vehículo a la vez.
+    // Ningún otro vehículo puede coger un envío que ya está en curso.
+
+    /** Al CREAR: el envío ya está activo con un vehículo diferente */
+    boolean existsByEnvioAndVehiculoNotAndEstadoIn(
+            Envio envio,
+            Vehiculo vehiculo,
+            List<EstadoEnvio> estados
+    );
+
+    /** Al EDITAR: igual, excluyendo la operación actual */
+    boolean existsByEnvioAndVehiculoNotAndEstadoInAndIdNot(
+            Envio envio,
+            Vehiculo vehiculo,
+            List<EstadoEnvio> estados,
+            Long id
+    );
+
+    // ── Conductor disponible ──────────────────────────────────────────────────
+    // Evita que un conductor esté activo en dos vehículos distintos el mismo día.
+
     @Query("""
             SELECT CASE WHEN COUNT(ev) > 0 THEN true ELSE false END
             FROM EnvioVehiculo ev
