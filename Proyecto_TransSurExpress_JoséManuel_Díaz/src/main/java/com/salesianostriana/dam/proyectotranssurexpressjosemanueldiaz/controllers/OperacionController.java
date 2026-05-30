@@ -1,7 +1,6 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.controllers;
 
-import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.AsignacionInvalidaException;
-import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.PesoExcedidoException;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.*;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.EnvioVehiculo;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.EnvioService;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.OperacionService;
@@ -38,6 +37,7 @@ public class OperacionController {
     @PostMapping("/guardar")
     public String guardarOperacion(@Valid @ModelAttribute("operacion") EnvioVehiculo op,
                                    BindingResult bindingResult, Model model) {
+
         // 1. Errores de validación de campos (@Valid)
         if (bindingResult.hasErrors()) {
             model.addAttribute("envios", envioService.findAll());
@@ -45,11 +45,16 @@ public class OperacionController {
             return "operaciones/formulario";
         }
 
-        // 2. Lógica de negocio: peso excedido o solapamiento de fechas
+        // 2. Reglas de negocio: todas las excepciones personalizadas
         try {
             operacionService.planificarOperacion(op);
             return "redirect:/operaciones";
-        } catch (PesoExcedidoException | AsignacionInvalidaException ex) {
+
+        } catch (EnvioInvalidoException
+                 | PesoExcedidoException
+                 | AsignacionInvalidaException
+                 | ConductorOcupadoException ex) {
+
             model.addAttribute("error", ex.getMessage());
             model.addAttribute("operacion", op);
             model.addAttribute("envios", envioService.findAll());

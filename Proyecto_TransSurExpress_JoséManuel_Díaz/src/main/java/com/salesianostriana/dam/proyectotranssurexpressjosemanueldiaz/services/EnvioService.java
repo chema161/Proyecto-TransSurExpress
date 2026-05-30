@@ -1,22 +1,37 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services;
 
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.CodigoEnvioDuplicadoException;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.EnvioInvalidoException;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.Envio;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repository.EnvioRepository;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.base.BaseServiceImpl;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
 public class EnvioService extends BaseServiceImpl<Envio, Long, EnvioRepository> {
 
+    /** Peso mínimo en kg que debe tener un envío para poder registrarse */
+    private static final double PESO_MINIMO_KG = 0.5;
+
     /**
-     * Guarda un envío comprobando antes que el código no esté duplicado.
-     * Solo aplica al crear (id == null); al editar el código es de solo lectura.
+     * Guarda un envío aplicando las reglas de negocio:
      *
-     * @throws CodigoEnvioDuplicadoException si ya existe un envío con ese código
+     * 1. Peso mínimo       → EnvioInvalidoException   (peso < 0.5 kg)
+     * 2. Código duplicado  → CodigoEnvioDuplicadoException (solo al crear)
      */
     public Envio guardarConValidacion(Envio envio) {
+
+        // ── 1. Bloqueo por peso mínimo ────────────────────────────────────────
+        if (envio.getPeso() != null && envio.getPeso() < PESO_MINIMO_KG) {
+            throw new EnvioInvalidoException(
+                "El peso del envío (" + envio.getPeso() + " kg) " +
+                "es inferior al mínimo permitido de " + PESO_MINIMO_KG + " kg."
+            );
+        }
+
+        // ── 2. Código duplicado (solo al crear) ───────────────────────────────
         if (envio.getId() == null) {
             List<Envio> existentes = repository.findByCodigoContainingIgnoreCase(envio.getCodigo());
             boolean codigoDuplicado = existentes.stream()
@@ -28,6 +43,7 @@ public class EnvioService extends BaseServiceImpl<Envio, Long, EnvioRepository> 
                 );
             }
         }
+
         return repository.save(envio);
     }
 

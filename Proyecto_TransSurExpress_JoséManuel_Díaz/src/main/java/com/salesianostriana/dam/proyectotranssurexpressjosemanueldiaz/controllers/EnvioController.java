@@ -1,6 +1,7 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.controllers;
 
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.CodigoEnvioDuplicadoException;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.EnvioInvalidoException;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.Envio;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.EnvioService;
 import jakarta.validation.Valid;
@@ -32,14 +33,16 @@ public class EnvioController {
     @PostMapping("/guardar")
     public String guardarEnvio(@Valid @ModelAttribute("envio") Envio envio,
                                BindingResult bindingResult, Model model) {
+
         // 1. Errores de validación de campos (@Valid)
         if (bindingResult.hasErrors()) {
             return "envios/formulario";
         }
 
+        // 2. Reglas de negocio: peso mínimo y código duplicado
         try {
             service.guardarConValidacion(envio);
-        } catch (CodigoEnvioDuplicadoException ex) {
+        } catch (EnvioInvalidoException | CodigoEnvioDuplicadoException ex) {
             model.addAttribute("error", ex.getMessage());
             return "envios/formulario";
         }
