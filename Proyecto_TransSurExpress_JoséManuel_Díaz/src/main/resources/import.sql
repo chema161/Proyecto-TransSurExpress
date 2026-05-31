@@ -26,8 +26,23 @@ INSERT INTO envio_vehiculo (id, estado, fecha, lugar, distancia, envio_id, vehic
 INSERT INTO envio_vehiculo (id, estado, fecha, lugar, distancia, envio_id, vehiculo_id) VALUES (4, 'ENTREGADO',  '2026-05-23', 'Domicilio Cliente Bilbao',   10.0, 4, 4);
 INSERT INTO envio_vehiculo (id, estado, fecha, lugar, distancia, envio_id, vehiculo_id) VALUES (5, 'EN_RUTA',    '2026-05-24', 'Aeropuerto de Zaragoza',    300.0, 5, 5);
 
+-- Historial de estados 
+INSERT INTO historial_estado (id, envio_vehiculo_id, estado_anterior, estado_nuevo, fecha_hora, usuario)
+    VALUES (1, 1, NULL,        'PREPARADO',  '2026-05-20 08:00:00', 'admin');
+INSERT INTO historial_estado (id, envio_vehiculo_id, estado_anterior, estado_nuevo, fecha_hora, usuario)
+    VALUES (2, 2, NULL,        'EN_RUTA',    '2026-05-21 09:15:00', 'admin');
+INSERT INTO historial_estado (id, envio_vehiculo_id, estado_anterior, estado_nuevo, fecha_hora, usuario)
+    VALUES (3, 2, 'EN_RUTA',   'EN_REPARTO', '2026-05-22 11:30:00', 'user');
+INSERT INTO historial_estado (id, envio_vehiculo_id, estado_anterior, estado_nuevo, fecha_hora, usuario)
+    VALUES (4, 3, NULL,        'EN_REPARTO', '2026-05-22 08:45:00', 'admin');
+INSERT INTO historial_estado (id, envio_vehiculo_id, estado_anterior, estado_nuevo, fecha_hora, usuario)
+    VALUES (5, 4, NULL,        'ENTREGADO',  '2026-05-23 16:00:00', 'user');
+INSERT INTO historial_estado (id, envio_vehiculo_id, estado_anterior, estado_nuevo, fecha_hora, usuario)
+    VALUES (6, 5, NULL,        'EN_RUTA',    '2026-05-24 07:30:00', 'admin');
+
 -- Reiniciar secuencias
 ALTER TABLE vehiculo ALTER COLUMN id RESTART WITH 10;
 ALTER TABLE conductor ALTER COLUMN id RESTART WITH 10;
 ALTER TABLE envio ALTER COLUMN id RESTART WITH 10;
 ALTER TABLE envio_vehiculo ALTER COLUMN id RESTART WITH 10;
+ALTER TABLE historial_estado ALTER COLUMN id RESTART WITH 10;

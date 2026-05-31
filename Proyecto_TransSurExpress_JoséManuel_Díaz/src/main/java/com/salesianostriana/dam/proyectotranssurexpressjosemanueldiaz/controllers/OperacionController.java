@@ -51,7 +51,8 @@ public class OperacionController {
         boolean esNueva = (op.getId() == null);
 
         try {
-            operacionService.planificarOperacion(op);
+            // Pasamos el nombre de usuario para que quede registrado en el historial
+            operacionService.planificarOperacion(op, auth.getName());
         } catch (EnvioInvalidoException | PesoExcedidoException
                  | AsignacionInvalidaException | ConductorOcupadoException ex) {
             model.addAttribute("error", ex.getMessage());
@@ -64,12 +65,10 @@ public class OperacionController {
         String codigoEnvio = op.getEnvio() != null ? op.getEnvio().getCodigo() : "desconocido";
 
         if (esNueva) {
-            // Crear: puede ser admin u operador
             redirectAttrs.addFlashAttribute("mensaje",
                 getActor(auth) + " ha planificado una nueva operación para el envío " + codigoEnvio + ".");
             redirectAttrs.addFlashAttribute("tipoMensaje", "exito");
         } else {
-            // Editar: solo admin puede llegar aquí
             redirectAttrs.addFlashAttribute("mensaje",
                 "El administrador ha modificado la operación del envío " + codigoEnvio + ".");
             redirectAttrs.addFlashAttribute("tipoMensaje", "edicion");
@@ -91,7 +90,6 @@ public class OperacionController {
 
     @GetMapping("/borrar/{id}")
     public String borrarOperacion(@PathVariable Long id, RedirectAttributes redirectAttrs) {
-        // Solo admin puede llegar aquí
         operacionService.findById(id).ifPresent(op -> {
             String codigoEnvio = op.getEnvio() != null ? op.getEnvio().getCodigo() : "desconocido";
             operacionService.deleteById(id);
@@ -107,6 +105,14 @@ public class OperacionController {
         model.addAttribute("historial", operacionService.obtenerHistorialPorEnvio(envioId));
         model.addAttribute("envioId", envioId);
         return "operaciones/historial_envio";
+    }
+
+    /** Nuevo endpoint: muestra el historial de cambios de estado de una operación concreta */
+    @GetMapping("/{id}/estados")
+    public String verHistorialEstados(@PathVariable Long id, Model model) {
+        operacionService.findById(id).ifPresent(op -> model.addAttribute("operacion", op));
+        model.addAttribute("historialEstados", operacionService.obtenerHistorialEstadosPorOperacion(id));
+        return "operaciones/historial_estados";
     }
 
     private String getActor(Authentication auth) {

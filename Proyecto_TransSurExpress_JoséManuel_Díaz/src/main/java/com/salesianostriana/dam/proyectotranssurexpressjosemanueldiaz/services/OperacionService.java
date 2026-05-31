@@ -4,10 +4,12 @@ import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.*;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repository.EnvioRepository;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repository.EnvioVehiculoRepository;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repository.HistorialEstadoRepository;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.base.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -19,17 +21,22 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
     @Autowired
     private EnvioRepository envioRepo;
 
+    @Autowired
+    private HistorialEstadoRepository historialRepo;
+
     /**
-     * Aplica todas las reglas de negocio antes de guardar una operación:
+     * Aplica todas las reglas de negocio antes de guardar una operación
+     * y registra el cambio de estado en el historial:
      *
-     * 1. Peso mínimo          → EnvioInvalidoException       (peso < 0.5 kg)
-     * 2. Peso máximo          → PesoExcedidoException        (peso > capacidad vehículo)
-     * 3. Sin tramos duplicados → AsignacionInvalidaException  (mismo vehículo + fecha + envío)
-     * 4. Exclusividad envío   → AsignacionInvalidaException   (envío ya activo en otro vehículo)
-     * 5. Conductor disponible → ConductorOcupadoException     (conductor activo en otro vehículo ese día)
-     * 6. Cálculo del coste    → automático: peso × distancia × 0,02 €
+     * 1. Peso mínimo           → EnvioInvalidoException
+     * 2. Peso máximo           → PesoExcedidoException
+     * 3. Sin tramos duplicados → AsignacionInvalidaException
+     * 4. Exclusividad envío    → AsignacionInvalidaException
+     * 5. Conductor disponible  → ConductorOcupadoException
+     * 6. Cálculo del coste     → automático: peso × distancia × 0,02 €
+     * 7. Registro de historial → guarda estadoAnterior → estadoNuevo + usuario + timestamp
      */
-    public void planificarOperacion(EnvioVehiculo op) {
+    public void planificarOperacion(EnvioVehiculo op, String usuario) {
 
         List<EstadoEnvio> estadosActivos = List.of(
                 EstadoEnvio.PREPARADO,
@@ -40,6 +47,14 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
         double peso      = op.getEnvio().getPeso();
         double capacidad = op.getVehiculo().getCapacidad();
         boolean esNueva  = (op.getId() == null);
+
+        // Guardamos el estado anterior antes de cualquier cambio (null si es nueva)
+        EstadoEnvio estadoAnterior = null;
+        if (!esNueva) {
+            estadoAnterior = repository.findById(op.getId())
+                    .map(EnvioVehiculo::getEstado)
+                    .orElse(null);
+        }
 
         // ── 1. Peso mínimo ────────────────────────────────────────────────────
         if (peso < PESO_MINIMO_KG) {
@@ -59,8 +74,6 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
         }
 
         // ── 3. Sin tramos duplicados ──────────────────────────────────────────
-        // Mismo vehículo + misma fecha + mismo envío = tramo duplicado.
-        // Un vehículo SÍ puede llevar envíos distintos el mismo día.
         boolean tramoDuplicado = esNueva
             ? repository.existsByVehiculoAndFechaAndEnvioAndEstadoIn(
                     op.getVehiculo(), op.getFecha(), op.getEnvio(), estadosActivos)
@@ -76,8 +89,6 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
         }
 
         // ── 4. Exclusividad del envío ─────────────────────────────────────────
-        // Un envío activo solo puede pertenecer a UN vehículo a la vez.
-        // Si ya está en curso con otro vehículo, se bloquea la asignación.
         boolean envioOcupado = esNueva
             ? repository.existsByEnvioAndVehiculoNotAndEstadoIn(
                     op.getEnvio(), op.getVehiculo(), estadosActivos)
@@ -93,7 +104,6 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
         }
 
         // ── 5. Conductor disponible ───────────────────────────────────────────
-        // Ningún conductor del vehículo puede estar activo en otro vehículo ese día.
         List<Conductor> conductores = op.getVehiculo().getConductores();
         if (conductores != null && !conductores.isEmpty()) {
             if (repository.existsConductorOcupadoEnOtroVehiculo(
@@ -112,10 +122,28 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
         op.getEnvio().setCoste(nuevoCoste);
         envioRepo.save(op.getEnvio());
 
-        repository.save(op);
+        EnvioVehiculo guardada = repository.save(op);
+
+        // ── 7. Registro de historial de estado ────────────────────────────────
+        // Solo registramos si es nueva operación O si el estado ha cambiado
+        boolean estadoCambio = esNueva || (estadoAnterior != op.getEstado());
+        if (estadoCambio) {
+            HistorialEstado entrada = HistorialEstado.builder()
+                    .envioVehiculo(guardada)
+                    .estadoAnterior(estadoAnterior)
+                    .estadoNuevo(op.getEstado())
+                    .fechaHora(LocalDateTime.now())
+                    .usuario(usuario)
+                    .build();
+            historialRepo.save(entrada);
+        }
     }
 
     public List<EnvioVehiculo> obtenerHistorialPorEnvio(Long envioId) {
         return repository.findByEnvioIdOrderByFechaAsc(envioId);
+    }
+
+    public List<HistorialEstado> obtenerHistorialEstadosPorOperacion(Long envioVehiculoId) {
+        return historialRepo.findByEnvioVehiculoIdOrderByFechaHoraAsc(envioVehiculoId);
     }
 }

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransSur Express - Historial de Estados</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/historial.css}" rel="stylesheet">
+    <style>
+        .usuario-badge {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #93c5fd;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+        .arrow-estado {
+            color: #6b7280;
+            font-size: 1rem;
+            margin: 0 0.4rem;
+        }
+        .estado-anterior {
+            text-decoration: line-through;
+            opacity: 0.55;
+            font-size: 0.78rem;
+        }
+        .hora-badge {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            color: #9ca3af;
+        }
+        .creacion-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #6b7280;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar-custom">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="bi bi-truck me-2"></i>TransSur<span>Express</span>
+            </a>
+            <a th:href="@{/operaciones}" class="btn-volver">
+                <i class="bi bi-arrow-left"></i> Volver a operaciones
+            </a>
+        </div>
+    </nav>
+
+    <!-- Cabecera con datos de la operación -->
+    <div class="envio-header" th:if="${operacion != null}" style="overflow: hidden; position: relative;">
+        <div class="container" style="position:relative; z-index:5;">
+            <div class="codigo-badge"
+                 th:text="${operacion.envio != null ? operacion.envio.codigo : 'SIN CÓDIGO'}">
+                ENV-2026-001
+            </div>
+            <h1 class="envio-title">Historial de Cambios de Estado</h1>
+            <div class="ruta-visual">
+                <span class="ciudad" th:text="${operacion.envio != null ? operacion.envio.origen : '-'}">Sevilla</span>
+                <i class="bi bi-arrow-right flecha-ruta"></i>
+                <span class="ciudad" th:text="${operacion.envio != null ? operacion.envio.destino : '-'}">Madrid</span>
+            </div>
+            <div class="info-chips mt-3">
+                <span class="chip">
+                    <i class="bi bi-truck"></i>
+                    <span th:text="${operacion.vehiculo != null ? operacion.vehiculo.matricula : 'N/A'}">1234-BBB</span>
+                </span>
+                <span class="chip">
+                    <i class="bi bi-geo-alt"></i>
+                    <span th:text="${operacion.lugar}">Almacén Central</span>
+                </span>
+                <span class="chip">
+                    <i class="bi bi-calendar3"></i>
+                    <span th:text="${#temporals.format(operacion.fecha, 'dd MMM yyyy')}">20 May 2026</span>
+                </span>
+                <span class="chip">
+                    <i class="bi bi-clock-history"></i>
+                    <span th:text="${#lists.size(historialEstados) + ' registros'}">3 registros</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="envio-header" th:unless="${operacion != null}" style="overflow: hidden; position: relative;">
+        <div class="container" style="position:relative; z-index:5;">
+            <div class="codigo-badge">SIN DATOS</div>
+            <h1 class="envio-title">Historial de Cambios de Estado</h1>
+        </div>
+    </div>
+
+    <div class="container" style="position:relative; z-index:10;">
+        <div class="timeline-container">
+
+            <!-- Sin registros -->
+            <div th:if="${#lists.isEmpty(historialEstados)}" class="empty-state">
+                <div class="empty-icon"><i class="bi bi-clock-history"></i></div>
+                <h5 class="fw-bold text-muted">Sin cambios registrados</h5>
+                <p class="text-muted small">Esta operación todavía no tiene cambios de estado en el historial.</p>
+            </div>
+
+            <!-- Timeline de cambios -->
+            <div th:if="${!#lists.isEmpty(historialEstados)}">
+                <p class="timeline-title"><i class="bi bi-arrow-left-right me-2"></i>Registro de cambios de estado</p>
+                <div class="timeline">
+                    <div class="timeline-item" th:each="entrada : ${historialEstados}">
+
+                        <!-- Dot con color del estado nuevo -->
+                        <div th:classappend="'dot-' + ${entrada.estadoNuevo.name()}" class="timeline-dot">
+                            <i class="bi bi-circle-fill" style="font-size:0.5rem;"></i>
+                        </div>
+
+                        <!-- Card -->
+                        <div th:classappend="'border-' + ${entrada.estadoNuevo.name()}" class="timeline-card">
+                            <div class="card-top">
+
+                                <!-- Transición de estado -->
+                                <span class="lugar-nombre d-flex align-items-center flex-wrap gap-1">
+                                    <!-- Creación (sin estado anterior) -->
+                                    <span th:if="${entrada.estadoAnterior == null}" class="creacion-label">
+                                        <i class="bi bi-plus-circle me-1"></i>Creación
+                                    </span>
+
+                                    <!-- Cambio (con estado anterior) -->
+                                    <span th:if="${entrada.estadoAnterior != null}"
+                                          th:text="${entrada.estadoAnterior.name().replace('_', ' ')}"
+                                          class="estado-anterior">
+                                    </span>
+                                    <i th:if="${entrada.estadoAnterior != null}"
+                                       class="bi bi-arrow-right arrow-estado"></i>
+
+                                    <!-- Estado nuevo siempre visible -->
+                                    <span th:classappend="'pill-' + ${entrada.estadoNuevo.name()}"
+                                          class="estado-pill"
+                                          th:text="${entrada.estadoNuevo.name().replace('_', ' ')}">
+                                    </span>
+                                </span>
+
+                                <!-- Badge de usuario -->
+                                <span class="usuario-badge">
+                                    <i class="bi bi-person-fill me-1"></i>
+                                    <span th:text="${entrada.usuario}">admin</span>
+                                </span>
+                            </div>
+
+                            <!-- Meta: fecha y hora -->
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="bi bi-calendar3"></i>
+                                    <strong th:text="${#temporals.format(entrada.fechaHora, 'dd MMM yyyy')}">20 May 2026</strong>
+                                </div>
+                                <div class="meta-item hora-badge">
+                                    <i class="bi bi-clock"></i>
+                                    <span th:text="${#temporals.format(entrada.fechaHora, 'HH:mm:ss')}">14:32:05</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
