@@ -17,11 +17,10 @@ public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Lo
     List<EnvioVehiculo> findByVehiculoId(Long vehiculoId);
     List<EnvioVehiculo> findByEnvioIdOrderByFechaAsc(Long envioId);
 
-    // ── Solapamiento ──────────────────────────────────────────────────────────
     // Bloquea crear un tramo duplicado: mismo vehículo + misma fecha + mismo envío.
-    // Un vehículo SÍ puede llevar varios envíos distintos el mismo día.
+    // Un vehículo si puede llevar varios envíos distintos el mismo día.
 
-    /** Al CREAR: tramo duplicado exacto */
+    /** Al crear: tramo duplicado exacto */
     boolean existsByVehiculoAndFechaAndEnvioAndEstadoIn(
             Vehiculo vehiculo,
             LocalDate fecha,
@@ -29,7 +28,7 @@ public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Lo
             List<EstadoEnvio> estados
     );
 
-    /** Al EDITAR: tramo duplicado exacto, excluyendo la operación actual */
+    /** Al editar: tramo duplicado exacto, excluyendo la operación actual */
     boolean existsByVehiculoAndFechaAndEnvioAndEstadoInAndIdNot(
             Vehiculo vehiculo,
             LocalDate fecha,
@@ -38,18 +37,17 @@ public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Lo
             Long id
     );
 
-    // ── Exclusividad del envío ────────────────────────────────────────────────
-    // Un envío activo solo puede estar asignado a UN vehículo a la vez.
+    // Un envío activo solo puede estar asignado a un vehículo a la vez.
     // Ningún otro vehículo puede coger un envío que ya está en curso.
 
-    /** Al CREAR: el envío ya está activo con un vehículo diferente */
+    /** Al crear: el envío ya está activo con un vehículo diferente */
     boolean existsByEnvioAndVehiculoNotAndEstadoIn(
             Envio envio,
             Vehiculo vehiculo,
             List<EstadoEnvio> estados
     );
 
-    /** Al EDITAR: igual, excluyendo la operación actual */
+    /** Al editar: igual, excluyendo la operación actual */
     boolean existsByEnvioAndVehiculoNotAndEstadoInAndIdNot(
             Envio envio,
             Vehiculo vehiculo,
@@ -57,7 +55,6 @@ public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Lo
             Long id
     );
 
-    // ── Conductor disponible ──────────────────────────────────────────────────
     // Evita que un conductor esté activo en dos vehículos distintos el mismo día.
 
     @Query("""

@@ -5,10 +5,12 @@ import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.C
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.VehiculoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
@@ -35,20 +37,38 @@ public class ConductorController {
 
     @PostMapping("/guardar")
     public String guardarConductor(@Valid @ModelAttribute("conductor") Conductor conductor,
-                                   BindingResult bindingResult, Model model) {
+                                   BindingResult bindingResult,
+                                   Authentication auth,
+                                   RedirectAttributes redirectAttrs,
+                                   Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("vehiculos", vehiculoService.findAll());
             return "conductores/formulario";
         }
+
+        boolean esNuevo = (conductor.getId() == null);
         service.save(conductor);
+
+        if (esNuevo) {
+            // Crear: puede ser admin u operador
+            redirectAttrs.addFlashAttribute("mensaje",
+                getActor(auth) + " ha dado de alta al conductor " + conductor.getNombre() + ".");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "exito");
+        } else {
+            // Editar: solo admin puede llegar aquí
+            redirectAttrs.addFlashAttribute("mensaje",
+                "El administrador ha actualizado la ficha de " + conductor.getNombre() + ".");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "edicion");
+        }
+
         return "redirect:/conductores";
     }
 
     @GetMapping("/editar/{id}")
     public String editarConductor(@PathVariable Long id, Model model) {
-        Optional<Conductor> conductorOpt = service.findById(id);
-        if (conductorOpt.isPresent()) {
-            model.addAttribute("conductor", conductorOpt.get());
+        Optional<Conductor> opt = service.findById(id);
+        if (opt.isPresent()) {
+            model.addAttribute("conductor", opt.get());
         } else {
             return "redirect:/conductores";
         }
@@ -57,8 +77,24 @@ public class ConductorController {
     }
 
     @GetMapping("/borrar/{id}")
-    public String borrarConductor(@PathVariable Long id) {
-        service.deleteById(id);
+    public String borrarConductor(@PathVariable Long id, RedirectAttributes redirectAttrs) {
+        // Solo el admin puede llegar aquí
+        service.findById(id).ifPresent(c -> {
+            service.deleteById(id);
+            redirectAttrs.addFlashAttribute("mensaje",
+                "El administrador ha dado de baja al conductor " + c.getNombre() + ".");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "borrado");
+        });
         return "redirect:/conductores";
+    }
+
+    private String getActor(Authentication auth) {
+        return auth.getAuthorities().stream()
+            .findFirst()
+            .map(a -> {
+                String rol = a.getAuthority().replace("ROLE_", "").toLowerCase();
+                return rol.equals("administrador") ? "El administrador" : "El operador";
+            })
+            .orElse("El usuario");
     }
 }

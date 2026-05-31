@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+    Fragmento reutilizable de notificación tipo Toast.
+    Uso en cualquier plantilla:
+        <div th:replace="~{fragmentos/toast :: notificacion}"></div>
+
+    Requiere en el modelo (via RedirectAttributes):
+        - mensaje     : texto a mostrar
+        - tipoMensaje : "exito" | "edicion" | "borrado"
+-->
+<div th:fragment="notificacion">
+
+    <div th:if="${mensaje}"
+         class="toast-container position-fixed bottom-0 end-0 p-3"
+         style="z-index: 9999;">
+
+        <div id="toastNotificacion"
+             class="toast align-items-center text-white border-0 shadow-lg"
+             th:classappend="${tipoMensaje == 'exito'}   ? 'bg-success' :
+                             (${tipoMensaje == 'borrado'} ? 'bg-danger'  :
+                             (${tipoMensaje == 'edicion'} ? 'bg-primary' : 'bg-secondary'))"
+             role="alert" aria-live="assertive" aria-atomic="true">
+
+            <div class="d-flex align-items-center">
+                <div class="toast-body fw-semibold d-flex align-items-center gap-2">
+
+                    <!-- Icono según el tipo -->
+                    <i class="bi fs-5"
+                       th:classappend="${tipoMensaje == 'exito'}   ? 'bi-check-circle-fill' :
+                                       (${tipoMensaje == 'borrado'} ? 'bi-trash-fill'        :
+                                       (${tipoMensaje == 'edicion'} ? 'bi-pencil-fill'       : 'bi-info-circle-fill'))">
+                    </i>
+
+                    <span th:text="${mensaje}">Mensaje de notificación</span>
+                </div>
+
+                <button type="button"
+                        class="btn-close btn-close-white me-2 ms-auto"
+                        data-bs-dismiss="toast"
+                        aria-label="Cerrar">
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Inicializar y mostrar el toast automáticamente -->
+    <script th:if="${mensaje}">
+        document.addEventListener('DOMContentLoaded', function () {
+            const toastEl = document.getElementById('toastNotificacion');
+            if (toastEl) {
+                new bootstrap.Toast(toastEl, { delay: 4000 }).show();
+            }
+        });
+    </script>
+
+</div>
+
+</body>
+</html>

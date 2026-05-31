@@ -4,10 +4,12 @@ import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.Ve
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.VehiculoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/vehiculos")
@@ -30,24 +32,57 @@ public class VehiculoController {
 
     @PostMapping("/guardar")
     public String guardarVehiculo(@Valid @ModelAttribute("vehiculo") Vehiculo vehiculo,
-                                  BindingResult bindingResult) {
+                                  BindingResult bindingResult,
+                                  Authentication auth,
+                                  RedirectAttributes redirectAttrs) {
         if (bindingResult.hasErrors()) {
-            // Volvemos al formulario mostrando los errores de validación
             return "vehiculos/formulario";
         }
+
+        boolean esNuevo = (vehiculo.getId() == null);
         service.save(vehiculo);
+
+        if (esNuevo) {
+            // Crear: puede ser admin u operador
+            redirectAttrs.addFlashAttribute("mensaje",
+                getActor(auth) + " ha registrado el vehículo " + vehiculo.getMatricula() + " correctamente.");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "exito");
+        } else {
+            // Editar: solo admin puede llegar aquí (bloqueado por SecurityConfig)
+            redirectAttrs.addFlashAttribute("mensaje",
+                "El administrador ha actualizado los datos del vehículo " + vehiculo.getMatricula() + ".");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "edicion");
+        }
+
         return "redirect:/vehiculos";
     }
 
     @GetMapping("/editar/{id}")
     public String mostrarFormularioEditar(@PathVariable Long id, Model model) {
-        service.findById(id).ifPresent(vehiculo -> model.addAttribute("vehiculo", vehiculo));
+        service.findById(id).ifPresent(v -> model.addAttribute("vehiculo", v));
         return "vehiculos/formulario";
     }
 
     @GetMapping("/borrar/{id}")
-    public String borrarVehiculo(@PathVariable Long id) {
-        service.deleteById(id);
+    public String borrarVehiculo(@PathVariable Long id, RedirectAttributes redirectAttrs) {
+        // Solo admin puede llegar aquí (bloqueado por SecurityConfig)
+        service.findById(id).ifPresent(v -> {
+            service.deleteById(id);
+            redirectAttrs.addFlashAttribute("mensaje",
+                "El administrador ha eliminado el vehículo " + v.getMatricula() + ".");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "borrado");
+        });
         return "redirect:/vehiculos";
+    }
+
+    // Solo necesario para el crear, ya que ambos roles pueden hacerlo
+    private String getActor(Authentication auth) {
+        return auth.getAuthorities().stream()
+            .findFirst()
+            .map(a -> {
+                String rol = a.getAuthority().replace("ROLE_", "").toLowerCase();
+                return rol.equals("administrador") ? "El administrador" : "El operador";
+            })
+            .orElse("El usuario");
     }
 }

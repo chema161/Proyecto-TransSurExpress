@@ -7,10 +7,12 @@ import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.O
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.VehiculoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/operaciones")
@@ -36,31 +38,44 @@ public class OperacionController {
 
     @PostMapping("/guardar")
     public String guardarOperacion(@Valid @ModelAttribute("operacion") EnvioVehiculo op,
-                                   BindingResult bindingResult, Model model) {
-
-        // 1. Errores de validación de campos (@Valid)
+                                   BindingResult bindingResult,
+                                   Authentication auth,
+                                   RedirectAttributes redirectAttrs,
+                                   Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("envios", envioService.findAll());
             model.addAttribute("vehiculos", vehiculoService.findAll());
             return "operaciones/formulario";
         }
 
-        // 2. Reglas de negocio: todas las excepciones personalizadas
+        boolean esNueva = (op.getId() == null);
+
         try {
             operacionService.planificarOperacion(op);
-            return "redirect:/operaciones";
-
-        } catch (EnvioInvalidoException
-                 | PesoExcedidoException
-                 | AsignacionInvalidaException
-                 | ConductorOcupadoException ex) {
-
+        } catch (EnvioInvalidoException | PesoExcedidoException
+                 | AsignacionInvalidaException | ConductorOcupadoException ex) {
             model.addAttribute("error", ex.getMessage());
             model.addAttribute("operacion", op);
             model.addAttribute("envios", envioService.findAll());
             model.addAttribute("vehiculos", vehiculoService.findAll());
             return "operaciones/formulario";
         }
+
+        String codigoEnvio = op.getEnvio() != null ? op.getEnvio().getCodigo() : "desconocido";
+
+        if (esNueva) {
+            // Crear: puede ser admin u operador
+            redirectAttrs.addFlashAttribute("mensaje",
+                getActor(auth) + " ha planificado una nueva operación para el envío " + codigoEnvio + ".");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "exito");
+        } else {
+            // Editar: solo admin puede llegar aquí
+            redirectAttrs.addFlashAttribute("mensaje",
+                "El administrador ha modificado la operación del envío " + codigoEnvio + ".");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "edicion");
+        }
+
+        return "redirect:/operaciones";
     }
 
     @GetMapping("/editar/{id}")
@@ -75,8 +90,15 @@ public class OperacionController {
     }
 
     @GetMapping("/borrar/{id}")
-    public String borrarOperacion(@PathVariable Long id) {
-        operacionService.deleteById(id);
+    public String borrarOperacion(@PathVariable Long id, RedirectAttributes redirectAttrs) {
+        // Solo admin puede llegar aquí
+        operacionService.findById(id).ifPresent(op -> {
+            String codigoEnvio = op.getEnvio() != null ? op.getEnvio().getCodigo() : "desconocido";
+            operacionService.deleteById(id);
+            redirectAttrs.addFlashAttribute("mensaje",
+                "El administrador ha eliminado la operación del envío " + codigoEnvio + ".");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "borrado");
+        });
         return "redirect:/operaciones";
     }
 
@@ -85,5 +107,15 @@ public class OperacionController {
         model.addAttribute("historial", operacionService.obtenerHistorialPorEnvio(envioId));
         model.addAttribute("envioId", envioId);
         return "operaciones/historial_envio";
+    }
+
+    private String getActor(Authentication auth) {
+        return auth.getAuthorities().stream()
+            .findFirst()
+            .map(a -> {
+                String rol = a.getAuthority().replace("ROLE_", "").toLowerCase();
+                return rol.equals("administrador") ? "El administrador" : "El operador";
+            })
+            .orElse("El usuario");
     }
 }
