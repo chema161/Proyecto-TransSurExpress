@@ -33,6 +33,8 @@ public class OperacionController {
         model.addAttribute("operacion", new EnvioVehiculo());
         model.addAttribute("envios", envioService.findAll());
         model.addAttribute("vehiculos", vehiculoService.findAll());
+        model.addAttribute("capacidadesDisponibles",
+                vehiculoService.calcularCapacidadesDisponibles(vehiculoService.findAll()));
         return "operaciones/formulario";
     }
 
@@ -45,13 +47,14 @@ public class OperacionController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("envios", envioService.findAll());
             model.addAttribute("vehiculos", vehiculoService.findAll());
+            model.addAttribute("capacidadesDisponibles",
+                    vehiculoService.calcularCapacidadesDisponibles(vehiculoService.findAll()));
             return "operaciones/formulario";
         }
 
         boolean esNueva = (op.getId() == null);
 
         try {
-            // Pasamos el nombre de usuario para que quede registrado en el historial
             operacionService.planificarOperacion(op, auth.getName());
         } catch (EnvioInvalidoException | PesoExcedidoException
                  | AsignacionInvalidaException | ConductorOcupadoException ex) {
@@ -59,6 +62,8 @@ public class OperacionController {
             model.addAttribute("operacion", op);
             model.addAttribute("envios", envioService.findAll());
             model.addAttribute("vehiculos", vehiculoService.findAll());
+            model.addAttribute("capacidadesDisponibles",
+                    vehiculoService.calcularCapacidadesDisponibles(vehiculoService.findAll()));
             return "operaciones/formulario";
         }
 
@@ -85,6 +90,8 @@ public class OperacionController {
         );
         model.addAttribute("envios", envioService.findAll());
         model.addAttribute("vehiculos", vehiculoService.findAll());
+        model.addAttribute("capacidadesDisponibles",
+                vehiculoService.calcularCapacidadesDisponibles(vehiculoService.findAll()));
         return "operaciones/formulario";
     }
 
@@ -107,12 +114,44 @@ public class OperacionController {
         return "operaciones/historial_envio";
     }
 
-    /** Nuevo endpoint: muestra el historial de cambios de estado de una operación concreta */
+    /** Historial de cambios de estado de una operación concreta */
     @GetMapping("/{id}/estados")
     public String verHistorialEstados(@PathVariable Long id, Model model) {
         operacionService.findById(id).ifPresent(op -> model.addAttribute("operacion", op));
         model.addAttribute("historialEstados", operacionService.obtenerHistorialEstadosPorOperacion(id));
         return "operaciones/historial_estados";
+    }
+
+    /** Formulario de reasignación de vehículo */
+    @GetMapping("/{id}/reasignar")
+    public String mostrarReasignacion(@PathVariable Long id, Model model) {
+        operacionService.findById(id).ifPresentOrElse(
+            op -> model.addAttribute("operacion", op),
+            () -> model.addAttribute("operacion", null)
+        );
+        model.addAttribute("vehiculos", vehiculoService.findAll());
+        return "operaciones/reasignar_vehiculo";
+    }
+
+    /** Procesa la reasignación de vehículo */
+    @PostMapping("/{id}/reasignar")
+    public String procesarReasignacion(@PathVariable Long id,
+                                       @RequestParam("nuevoVehiculoId") Long nuevoVehiculoId,
+                                       Authentication auth,
+                                       RedirectAttributes redirectAttrs,
+                                       Model model) {
+        try {
+            operacionService.reasignarVehiculo(id, nuevoVehiculoId, auth.getName());
+            redirectAttrs.addFlashAttribute("mensaje",
+                getActor(auth) + " ha reasignado el vehículo de la operación correctamente.");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "edicion");
+            return "redirect:/operaciones";
+        } catch (ReasignacionInvalidaException ex) {
+            model.addAttribute("error", ex.getMessage());
+            operacionService.findById(id).ifPresent(op -> model.addAttribute("operacion", op));
+            model.addAttribute("vehiculos", vehiculoService.findAll());
+            return "operaciones/reasignar_vehiculo";
+        }
     }
 
     private String getActor(Authentication auth) {

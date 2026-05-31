@@ -23,6 +23,9 @@ public class Conductor {
     @Max(value = 50, message = "La experiencia no puede superar los 50 años")
     private Integer experiencia;
 
+    @Builder.Default
+    private boolean activo = true;
+
     @ManyToOne
     private Vehiculo vehiculo;
   

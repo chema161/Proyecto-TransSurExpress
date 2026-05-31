@@ -24,6 +24,9 @@ public class Vehiculo {
     @DecimalMin(value = "0.01", message = "La capacidad debe ser mayor que 0")
     private Double capacidad;
 
+    @Builder.Default
+    private boolean activo = true;
+
     @ToString.Exclude
     @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EnvioVehiculo> envios;

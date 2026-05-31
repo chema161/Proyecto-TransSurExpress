@@ -9,4 +9,6 @@ import java.util.List;
 public interface VehiculoRepository extends JpaRepository<Vehiculo, Long> {
     // Buscar vehículo por matrícula
     List<Vehiculo> findByMatriculaContainingIgnoreCase(String matricula);
+    List<Vehiculo> findByActivoTrue();
+    List<Vehiculo> findByMatriculaContainingIgnoreCaseAndActivoTrue(String matricula);
 }

@@ -19,8 +19,10 @@ public class VehiculoController {
     private final VehiculoService service;
 
     @GetMapping
-    public String listarVehiculos(Model model) {
-        model.addAttribute("vehiculos", service.findAll());
+    public String listarVehiculos(Model model, Authentication auth) {
+        var vehiculos = esAdmin(auth) ? service.findAllIncluyendoInactivos() : service.findAll();
+        model.addAttribute("vehiculos", vehiculos);
+        model.addAttribute("capacidadesDisponibles", service.calcularCapacidadesDisponibles(vehiculos));
         return "vehiculos/lista";
     }
 
@@ -84,5 +86,10 @@ public class VehiculoController {
                 return rol.equals("administrador") ? "El administrador" : "El operador";
             })
             .orElse("El usuario");
+    }
+
+    private boolean esAdmin(Authentication auth) {
+        return auth != null && auth.getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
     }
 }

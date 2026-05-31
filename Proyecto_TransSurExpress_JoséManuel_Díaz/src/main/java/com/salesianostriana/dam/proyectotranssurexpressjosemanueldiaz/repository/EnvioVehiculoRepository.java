@@ -17,6 +17,30 @@ public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Lo
     List<EnvioVehiculo> findByVehiculoId(Long vehiculoId);
     List<EnvioVehiculo> findByEnvioIdOrderByFechaAsc(Long envioId);
 
+    @Query("""
+            SELECT COALESCE(SUM(ev.envio.peso), 0.0)
+            FROM EnvioVehiculo ev
+            WHERE ev.vehiculo.id = :vehiculoId
+              AND ev.estado IN :estados
+            """)
+    Double sumarPesoEnviosActivosPorVehiculo(
+            @Param("vehiculoId") Long vehiculoId,
+            @Param("estados") List<EstadoEnvio> estados
+    );
+
+    @Query("""
+            SELECT COALESCE(SUM(ev.envio.peso), 0.0)
+            FROM EnvioVehiculo ev
+            WHERE ev.vehiculo.id = :vehiculoId
+              AND ev.estado IN :estados
+              AND (:operacionId IS NULL OR ev.id <> :operacionId)
+            """)
+    Double sumarPesoEnviosActivosPorVehiculoExcluyendoOperacion(
+            @Param("vehiculoId") Long vehiculoId,
+            @Param("estados") List<EstadoEnvio> estados,
+            @Param("operacionId") Long operacionId
+    );
+
     // Bloquea crear un tramo duplicado: mismo vehículo + misma fecha + mismo envío.
     // Un vehículo si puede llevar varios envíos distintos el mismo día.
 
@@ -63,6 +87,7 @@ public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Lo
             JOIN ev.vehiculo v
             JOIN v.conductores c
             WHERE c IN :conductores
+              AND c.activo = true
               AND ev.vehiculo <> :vehiculo
               AND ev.fecha = :fecha
               AND ev.estado IN :estados

@@ -50,6 +50,7 @@
                                 <th>Vehículo Asignado</th>
                                 <th>Lugar / Punto de Control</th>
                                 <th>Distancia</th>
+                                <th>Entrega Estimada</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -61,6 +62,7 @@
                                 <td th:text="${op.vehiculo != null ? op.vehiculo.matricula : 'Sin Vehículo'}"></td>
                                 <td th:text="${op.lugar}"></td>
                                 <td><span th:text="${op.distancia}"></span> km</td>
+                                <td th:text="${op.fechaEstimadaEntrega != null ? #temporals.format(op.fechaEstimadaEntrega, 'dd/MM/yyyy') : 'Pendiente'}"></td>
                                 <td>
                                     <span th:text="${op.estado}"
                                           th:classappend="${op.estado?.name() == 'PREPARADO'}  ? 'bg-secondary' :
@@ -90,10 +92,17 @@
 									   class="btn btn-sm btn-outline-info" title="Ver historial de cambios de estado">
 									    <i class="bi bi-arrow-left-right"></i>
 									</a>
+									<a sec:authorize="hasRole('ADMINISTRADOR')"
+									   th:if="${op.estado?.name() != 'ENTREGADO'}"
+									   th:href="@{/operaciones/{id}/reasignar(id=${op.id})}"
+									   class="btn btn-sm btn-outline-warning"
+									   title="Reasignar vehículo">
+									    <i class="bi bi-arrow-repeat"></i>
+									</a>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(operaciones)}">
-                                <td colspan="7" class="text-muted p-4">No hay servicios planificados actualmente.</td>
+                                <td colspan="8" class="text-muted p-4">No hay servicios planificados actualmente.</td>
                             </tr>
                         </tbody>
                     </table>

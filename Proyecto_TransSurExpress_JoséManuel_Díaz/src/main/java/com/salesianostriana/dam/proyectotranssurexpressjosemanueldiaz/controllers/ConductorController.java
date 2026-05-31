@@ -23,8 +23,8 @@ public class ConductorController {
     private final VehiculoService vehiculoService;
 
     @GetMapping
-    public String listarConductores(Model model) {
-        model.addAttribute("conductores", service.findAll());
+    public String listarConductores(Model model, Authentication auth) {
+        model.addAttribute("conductores", esAdmin(auth) ? service.findAllIncluyendoInactivos() : service.findAll());
         return "conductores/lista";
     }
 
@@ -96,5 +96,10 @@ public class ConductorController {
                 return rol.equals("administrador") ? "El administrador" : "El operador";
             })
             .orElse("El usuario");
+    }
+
+    private boolean esAdmin(Authentication auth) {
+        return auth != null && auth.getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
     }
 }

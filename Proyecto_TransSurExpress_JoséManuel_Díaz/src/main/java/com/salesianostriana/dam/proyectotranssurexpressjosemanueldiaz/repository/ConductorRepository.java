@@ -10,7 +10,10 @@ import java.util.List;
 public interface ConductorRepository extends JpaRepository<Conductor, Long> {
     // Buscar por nombre
     List<Conductor> findByNombreContainingIgnoreCase(String nombre);
+    List<Conductor> findByActivoTrue();
+    List<Conductor> findByNombreContainingIgnoreCaseAndActivoTrue(String nombre);
 
     // Buscar conductores con experiencia mayor a X años
     List<Conductor> findByExperienciaGreaterThan(Integer experiencia);
+    List<Conductor> findByExperienciaGreaterThanAndActivoTrue(Integer experiencia);
 }

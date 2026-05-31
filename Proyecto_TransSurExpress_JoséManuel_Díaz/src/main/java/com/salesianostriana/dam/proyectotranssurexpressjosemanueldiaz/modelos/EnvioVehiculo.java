@@ -33,6 +33,8 @@ public class EnvioVehiculo {
     @NotNull(message = "La fecha es obligatoria")
     private LocalDate fecha;
 
+    private LocalDate fechaEstimadaEntrega;
+
     @NotBlank(message = "El punto de control es obligatorio")
     @Size(max = 200, message = "El lugar no puede superar los 200 caracteres")
     private String lugar;

@@ -45,11 +45,13 @@
                                 <th>Nombre Completo</th>
                                 <th>Experiencia Laboral</th>
                                 <th>Vehículo Asignado</th>
+                                <th sec:authorize="hasRole('ADMINISTRADOR')">Estado</th>
                                 <th sec:authorize="hasRole('ADMINISTRADOR')">Acciones de Gestión</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="conductor : ${conductores}">
+                            <tr th:each="conductor : ${conductores}"
+                                th:classappend="${!conductor.activo} ? 'table-secondary text-muted'">
                                 <td th:text="${conductor.id}" class="text-muted small"></td>
                                 <td th:text="${conductor.nombre}" class="fw-bold"></td>
                                 <td><span th:text="${conductor.experiencia}"></span> años</td>
@@ -64,12 +66,17 @@
                                     </span>
                                 </td>
                                 <td sec:authorize="hasRole('ADMINISTRADOR')">
+                                    <span th:if="${conductor.activo}" class="badge bg-success">Activo</span>
+                                    <span th:unless="${conductor.activo}" class="badge bg-secondary">Inactivo</span>
+                                </td>
+                                <td sec:authorize="hasRole('ADMINISTRADOR')">
                                     <div class="btn-group gap-1">
                                         <a th:href="@{/conductores/editar/{id}(id=${conductor.id})}"
                                            class="btn btn-warning btn-sm shadow-sm" title="Editar">
                                             <i class="bi bi-pencil-square text-dark"></i>
                                         </a>
-                                        <a th:href="@{/conductores/borrar/{id}(id=${conductor.id})}"
+                                        <a th:if="${conductor.activo}"
+                                           th:href="@{/conductores/borrar/{id}(id=${conductor.id})}"
                                            class="btn btn-danger btn-sm shadow-sm"
                                            th:data-nombre="${conductor.nombre}"
                                            onclick="return confirmarBorrado(this.getAttribute('data-nombre'));" title="Eliminar">
@@ -79,7 +86,7 @@
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(conductores)}">
-                                <td colspan="5" class="text-muted p-4">No hay personal de conducción registrado.</td>
+                                <td colspan="6" class="text-muted p-4">No hay personal de conducción registrado.</td>
                             </tr>
                         </tbody>
                     </table>
