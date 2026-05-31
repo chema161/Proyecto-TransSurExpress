@@ -20,7 +20,7 @@
                     <i class="bi bi-arrow-left me-1"></i>Conductores
                 </a>
                 <a th:href="@{/}" class="btn btn-outline-light btn-sm">
-                    <i class="bi bi-house-door me-1"></i>Volver al inicio
+                    <i class="bi bi-house-door me-1"></i>Inicio
                 </a>
                 <a th:href="@{/envios}" class="btn btn-outline-light btn-sm">
                     Envíos<i class="bi bi-arrow-right ms-1"></i>
@@ -63,27 +63,27 @@
                                 <td><span th:text="${op.distancia}"></span> km</td>
                                 <td>
                                     <span th:text="${op.estado}"
-                                          th:classappend="${op.estado?.name() == 'PREPARADO'} ? 'bg-secondary' :
-                                                          (${op.estado?.name() == 'EN_RUTA'} ? 'bg-primary' :
+                                          th:classappend="${op.estado?.name() == 'PREPARADO'}  ? 'bg-secondary' :
+                                                          (${op.estado?.name() == 'EN_RUTA'}    ? 'bg-primary'   :
                                                           (${op.estado?.name() == 'EN_REPARTO'} ? 'bg-warning text-dark' :
-                                                          (${op.estado?.name() == 'ENTREGADO'} ? 'bg-success' : 'bg-secondary')))"
+                                                          (${op.estado?.name() == 'ENTREGADO'}  ? 'bg-success'   : 'bg-secondary')))"
                                           class="badge p-2">
                                     </span>
                                 </td>
                                 <td>
-                                    <!-- Editar y borrar solo para ADMIN -->
                                     <a sec:authorize="hasRole('ADMINISTRADOR')"
-                                       th:href="@{/operaciones/editar/{id}(id=${op.id})}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                       th:href="@{/operaciones/editar/{id}(id=${op.id})}"
+                                       class="btn btn-sm btn-outline-primary" title="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <a sec:authorize="hasRole('ADMINISTRADOR')"
                                        th:href="@{/operaciones/borrar/{id}(id=${op.id})}"
                                        class="btn btn-sm btn-outline-danger"
-                                       onclick="return confirm('¿Seguro que quieres eliminar esta planificación?');" title="Eliminar">
+                                       onclick="return confirm('¿Seguro que quieres eliminar esta operación?');" title="Eliminar">
                                         <i class="bi bi-trash"></i>
                                     </a>
-                                    <!-- Historial visible para todos -->
-                                    <a th:href="@{/operaciones/historial/{id}(id=${op.envio.id})}" class="btn btn-sm btn-outline-secondary" title="Ver historial del envío">
+                                    <a th:href="@{/operaciones/historial/{id}(id=${op.envio.id})}"
+                                       class="btn btn-sm btn-outline-secondary" title="Ver historial del envío">
                                         <i class="bi bi-clock-history"></i>
                                     </a>
                                 </td>
@@ -97,6 +97,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Toast de notificación -->
+    <div th:replace="~{fragments/toast :: notificacion}"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
