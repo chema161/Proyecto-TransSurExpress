@@ -1,19 +1,44 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services;
 
-import org.springframework.stereotype.Service;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.Conductor;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repository.ConductorRepository;
-import lombok.RequiredArgsConstructor;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.base.BaseServiceImpl;
+import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional; 
 
 @Service
-@RequiredArgsConstructor
-public class ConductorService {
-    private final ConductorRepository repository;
+public class ConductorService extends BaseServiceImpl<Conductor, Long, ConductorRepository> {
 
-    public List<Conductor> findAll() { return repository.findAll(); }
-    public Optional<Conductor> findById(Long id) { return repository.findById(id); }
-    public Conductor save(Conductor conductor) { return repository.save(conductor); }
-    public void deleteById(Long id) { repository.deleteById(id); }
-} 
+    @Override
+    public List<Conductor> findAll() {
+        return repository.findByActivoTrue();
+    }
+
+    public List<Conductor> findByNombre(String nombre) {
+        return repository.findByNombreContainingIgnoreCaseAndActivoTrue(nombre);
+    }
+
+    public List<Conductor> findConExperiencia(Integer anios) {
+        return repository.findByExperienciaGreaterThanAndActivoTrue(anios);
+    }
+
+    public List<Conductor> findAllIncluyendoInactivos() {
+        return repository.findAll();
+    }
+
+    @Override
+    public Conductor save(Conductor conductor) {
+        if (conductor.getId() == null) {
+            conductor.setActivo(true);
+        }
+        return repository.save(conductor);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        repository.findById(id).ifPresent(conductor -> {
+            conductor.setActivo(false);
+            repository.save(conductor);
+        });
+    }
+}

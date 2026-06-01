@@ -1,11 +1,17 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.controllers;
 
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.CodigoEnvioDuplicadoException;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.EnvioInvalidoException;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.Envio;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.EnvioService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/envios")
@@ -27,8 +33,36 @@ public class EnvioController {
     }
 
     @PostMapping("/guardar")
-    public String guardarEnvio(@ModelAttribute("envio") Envio envio) {
-        service.save(envio);
+    public String guardarEnvio(@Valid @ModelAttribute("envio") Envio envio,
+                               BindingResult bindingResult,
+                               Authentication auth,
+                               RedirectAttributes redirectAttrs,
+                               Model model) {
+        if (bindingResult.hasErrors()) {
+            return "envios/formulario";
+        }
+
+        boolean esNuevo = (envio.getId() == null);
+
+        try {
+            service.guardarConValidacion(envio);
+        } catch (EnvioInvalidoException | CodigoEnvioDuplicadoException ex) {
+            model.addAttribute("error", ex.getMessage());
+            return "envios/formulario";
+        }
+
+        if (esNuevo) {
+            // Crear: puede ser admin u operador
+            redirectAttrs.addFlashAttribute("mensaje",
+                getActor(auth) + " ha registrado el envío " + envio.getCodigo() + ".");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "exito");
+        } else {
+            // Editar: solo admin puede llegar aquí
+            redirectAttrs.addFlashAttribute("mensaje",
+                "El administrador ha actualizado el envío " + envio.getCodigo() + ".");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "edicion");
+        }
+
         return "redirect:/envios";
     }
 
@@ -39,9 +73,24 @@ public class EnvioController {
     }
 
     @GetMapping("/borrar/{id}")
-    public String borrarEnvio(@PathVariable Long id) {
-        service.deleteById(id);
+    public String borrarEnvio(@PathVariable Long id, RedirectAttributes redirectAttrs) {
+        // Solo admin puede llegar aquí
+        service.findById(id).ifPresent(envio -> {
+            service.deleteById(id);
+            redirectAttrs.addFlashAttribute("mensaje",
+                "El administrador ha eliminado el envío " + envio.getCodigo() + ".");
+            redirectAttrs.addFlashAttribute("tipoMensaje", "borrado");
+        });
         return "redirect:/envios";
     }
-    
+
+    private String getActor(Authentication auth) {
+        return auth.getAuthorities().stream()
+            .findFirst()
+            .map(a -> {
+                String rol = a.getAuthority().replace("ROLE_", "").toLowerCase();
+                return rol.equals("administrador") ? "El administrador" : "El operador";
+            })
+            .orElse("El usuario");
+    }
 }

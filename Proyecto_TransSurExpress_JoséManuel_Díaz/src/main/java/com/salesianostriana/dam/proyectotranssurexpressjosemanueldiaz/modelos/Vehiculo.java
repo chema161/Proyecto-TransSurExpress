@@ -1,11 +1,9 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos;
 
-import java.util.List;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -14,14 +12,26 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Vehiculo {
 
-	@Id @GeneratedValue
-	private Long id;
-	private String matricula;
-	private Double capacidad;
-	
-	@OneToMany(mappedBy = "vehiculo")
-	private List<EnvioVehiculo> envios;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@OneToMany(mappedBy = "vehiculo")
-	private List<Conductor> conductores;
+    @NotBlank(message = "La matrícula es obligatoria")
+    @Pattern(regexp = "^\\d{4}-[A-Za-z]{3}$",
+             message = "Formato incorrecto. Usa el formato: 1234-ABC")
+    private String matricula;
+
+    @NotNull(message = "La capacidad máxima es obligatoria")
+    @DecimalMin(value = "0.01", message = "La capacidad debe ser mayor que 0")
+    private Double capacidad;
+
+    @Builder.Default
+    private boolean activo = true;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EnvioVehiculo> envios;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Conductor> conductores;
 }

@@ -1,23 +1,24 @@
 package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services;
 
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.EnvioVehiculo;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.EstadoEnvio;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repository.EnvioVehiculoRepository;
-import lombok.RequiredArgsConstructor;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.base.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-public class EnvioVehiculoService {
-    private final EnvioVehiculoRepository repository;
+public class EnvioVehiculoService extends BaseServiceImpl<EnvioVehiculo, Long, EnvioVehiculoRepository> {
 
-    public List<EnvioVehiculo> findAll() { return repository.findAll(); }
-    public Optional<EnvioVehiculo> findById(Long id) { return repository.findById(id); }
-    
-    public EnvioVehiculo save(EnvioVehiculo envioVehiculo) {
-        return repository.save(envioVehiculo);
+    public List<EnvioVehiculo> findByEstado(EstadoEnvio estado) {
+        return repository.findByEstado(estado);
     }
-    
-    public void deleteById(Long id) { repository.deleteById(id); }
+
+    public List<EnvioVehiculo> findByEnvioId(Long envioId) {
+        return repository.findByEnvioId(envioId);
+    }
+
+    public List<EnvioVehiculo> findByVehiculoId(Long vehiculoId) {
+        return repository.findByVehiculoId(vehiculoId);
+    }
 }

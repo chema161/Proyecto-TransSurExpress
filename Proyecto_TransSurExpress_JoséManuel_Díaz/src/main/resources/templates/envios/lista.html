@@ -1,34 +1,69 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TransSur Express - Envíos</title>
+    <title>TransSur Express — Gestión de Envíos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
+    <link th:href="@{/css/index.css}" rel="stylesheet">
+    <link th:href="@{/css/lista-dark.css}" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body>
 
-    <nav class="navbar navbar-dark bg-primary mb-4">
-        <div class="container">
-            <a class="navbar-brand" th:href="@{/}"><i class="bi bi-truck me-2"></i>TransSur Express</a>
-            <a th:href="@{/}" class="btn btn-outline-light btn-sm"><i class="bi bi-house-door me-1"></i> Volver al inicio</a>
+    <nav class="navbar-dash">
+        <div class="container d-flex align-items-center gap-3">
+            <a class="nav-brand me-3" th:href="@{/}">
+                <i class="bi bi-truck-front-fill"></i>
+                TransSur<span class="accent">Express</span>
+            </a>
+            <div class="d-flex gap-1 flex-wrap">
+                <a th:href="@{/envios}"      class="nav-link-pill active"><i class="bi bi-box-seam me-1"></i>Envíos</a>
+                <a th:href="@{/vehiculos}"   class="nav-link-pill"><i class="bi bi-truck me-1"></i>Vehículos</a>
+                <a th:href="@{/conductores}" class="nav-link-pill"><i class="bi bi-person-badge me-1"></i>Conductores</a>
+                <a th:href="@{/operaciones}" class="nav-link-pill"><i class="bi bi-geo-alt me-1"></i>Operaciones</a>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <span class="nav-user" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-person-circle"></i>
+                    <span sec:authentication="name">usuario</span>
+                </span>
+                <a th:href="@{/login}"  class="btn-logout" sec:authorize="!isAuthenticated()">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Acceder
+                </a>
+                <a th:href="@{/logout}" class="btn-logout" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-box-arrow-right me-1"></i>Salir
+                </a>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="text-primary"><i class="bi bi-box-seam me-2"></i>Gestión de Envíos</h2>
-            <a th:href="@{/envios/nuevo}" class="btn btn-success">
-                <i class="bi bi-plus-circle me-1"></i> Nuevo Envío
-            </a>
+    <div class="page-hero">
+        <div class="container">
+            <p class="hero-eyebrow">Registro de paquetes</p>
+            <h1 class="page-title">
+                <i class="bi bi-box-seam-fill me-2" style="color:var(--azul); font-size:1.5rem;"></i>
+                Gestión de Envíos
+            </h1>
         </div>
+    </div>
 
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped mb-0 text-center align-middle">
-                        <thead class="table-dark">
+    <div class="dash-body">
+        <div class="container">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <p class="section-label mb-0">Envíos registrados</p>
+                <a th:href="@{/envios/nuevo}" class="btn-success-dark">
+                    <i class="bi bi-plus-lg"></i> Nuevo Envío
+                </a>
+            </div>
+
+            <div class="dark-panel">
+                <div class="table-responsive-dark">
+                    <table class="dark-table">
+                        <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Código</th>
@@ -36,37 +71,58 @@
                                 <th>Destino</th>
                                 <th>Peso</th>
                                 <th>Coste</th>
-                                <th>Acciones</th>
+                                <th sec:authorize="hasRole('ADMINISTRADOR')">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="envio : ${envios}">
-                                <td th:text="${envio.id}"></td>
-                                <td th:text="${envio.codigo}" class="fw-bold"></td>
+                                <td><span class="val-id" th:text="${envio.id}"></span></td>
+                                <td>
+                                    <span class="val-blue val-bold" th:text="${envio.codigo}"></span>
+                                </td>
                                 <td th:text="${envio.origen}"></td>
                                 <td th:text="${envio.destino}"></td>
-                                <td><span th:text="${envio.peso}"></span> kg</td>
-                                <td><span th:text="${envio.coste}"></span> €</td>
+                                <td><span class="val-mono" th:text="${envio.peso + ' kg'}"></span></td>
                                 <td>
-                                    <a th:href="@{/envios/editar/{id}(id=${envio.id})}" class="btn btn-warning btn-sm">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a th:href="@{/envios/borrar/{id}(id=${envio.id})}" 
-                                       class="btn btn-danger btn-sm"
-                                       onclick="return confirm('¿Estás seguro de que deseas eliminar este envío? Esta acción no se puede deshacer.');">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                                    <span class="val-mono" style="color:var(--verde);">
+                                        <span th:text="${envio.coste}"></span> €
+                                    </span>
+                                </td>
+                                <td sec:authorize="hasRole('ADMINISTRADOR')">
+                                    <div class="d-flex gap-2">
+                                        <a th:href="@{/envios/editar/{id}(id=${envio.id})}"
+                                           class="btn-action edit" title="Editar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a th:href="@{/envios/borrar/{id}(id=${envio.id})}"
+                                           class="btn-action danger"
+                                           th:data-codigo="${envio.codigo}"
+                                           onclick="return confirmarBorrado(this.getAttribute('data-codigo'));"
+                                           title="Eliminar">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
-                            <tr th:if="${#lists.isEmpty(envios)}">
-                                <td colspan="7" class="text-muted p-4">No hay envíos registrados en el sistema.</td>
+                            <tr th:if="${#lists.isEmpty(envios)}" class="empty-row">
+                                <td colspan="7">
+                                    <i class="bi bi-inbox me-2"></i>No hay envíos registrados en el sistema.
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+
         </div>
     </div>
 
+    <div th:replace="~{fragments/toast :: notificacion}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmarBorrado(codigo) {
+            return confirm('¿Estás seguro de que deseas eliminar el envío ' + codigo + '? Esta acción no se puede deshacer.');
+        }
+    </script>
 </body>
 </html>

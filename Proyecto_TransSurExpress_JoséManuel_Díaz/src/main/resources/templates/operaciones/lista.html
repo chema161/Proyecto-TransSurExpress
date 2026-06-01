@@ -1,96 +1,157 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TransSur Express - Planificación de Rutas</title>
+    <title>TransSur Express — Planificación de Rutas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
+    <link th:href="@{/css/index.css}" rel="stylesheet">
+    <link th:href="@{/css/lista-dark.css}" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" th:href="@{/}">
-                <i class="bi bi-truck me-2"></i>TransSur Express
+    <nav class="navbar-dash">
+        <div class="container d-flex align-items-center gap-3">
+            <a class="nav-brand me-3" th:href="@{/}">
+                <i class="bi bi-truck-front-fill"></i>
+                TransSur<span class="accent">Express</span>
             </a>
-            <a th:href="@{/}" class="btn btn-outline-light btn-sm">
-                <i class="bi bi-house-door me-1"></i>Volver al inicio
-            </a>
+            <div class="d-flex gap-1 flex-wrap">
+                <a th:href="@{/envios}"      class="nav-link-pill"><i class="bi bi-box-seam me-1"></i>Envíos</a>
+                <a th:href="@{/vehiculos}"   class="nav-link-pill"><i class="bi bi-truck me-1"></i>Vehículos</a>
+                <a th:href="@{/conductores}" class="nav-link-pill"><i class="bi bi-person-badge me-1"></i>Conductores</a>
+                <a th:href="@{/operaciones}" class="nav-link-pill active"><i class="bi bi-geo-alt me-1"></i>Operaciones</a>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <span class="nav-user" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-person-circle"></i>
+                    <span sec:authentication="name">usuario</span>
+                </span>
+                <a th:href="@{/login}"  class="btn-logout" sec:authorize="!isAuthenticated()">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Acceder
+                </a>
+                <a th:href="@{/logout}" class="btn-logout" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-box-arrow-right me-1"></i>Salir
+                </a>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="text-primary mb-0 fw-bold">
-                <i class="bi bi-calendar-check me-2"></i>Seguimiento y Planificación de Rutas
-            </h2>
-            <a th:href="@{/operaciones/nueva}" class="btn btn-success fw-semibold shadow-sm">
-                <i class="bi bi-calendar-plus me-2"></i>Planificar Servicio
-            </a>
+    <div class="page-hero">
+        <div class="container">
+            <p class="hero-eyebrow">Seguimiento de rutas</p>
+            <h1 class="page-title">
+                <i class="bi bi-journal-check me-2" style="color:var(--naranja); font-size:1.5rem;"></i>
+                Planificación de Rutas
+            </h1>
         </div>
+    </div>
 
-        <div class="card shadow border-0">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped mb-0 text-center align-middle">
-                        <thead class="table-dark">
+    <div class="dash-body">
+        <div class="container">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <p class="section-label mb-0">Operaciones registradas</p>
+                <a th:href="@{/operaciones/nueva}" class="btn-success-dark">
+                    <i class="bi bi-calendar-plus"></i> Planificar Servicio
+                </a>
+            </div>
+
+            <div class="dark-panel">
+                <div class="table-responsive-dark">
+                    <table class="dark-table">
+                        <thead>
                             <tr>
                                 <th>Fecha</th>
                                 <th>Código Envío</th>
-                                <th>Vehículo Asignado</th>
-                                <th>Lugar / Punto de Control</th>
+                                <th>Vehículo</th>
+                                <th>Punto de Control</th>
                                 <th>Distancia</th>
+                                <th>Entrega Est.</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="op : ${operaciones}">
-                                <td th:text="${#temporals.format(op.fecha, 'dd/MM/yyyy')}"></td>
-                                <td th:text="${op.envio != null ? op.envio.codigo : 'Sin Código'}" class="fw-bold text-primary"></td>
-                                <td th:text="${op.vehiculo != null ? op.vehiculo.matricula : 'Sin Vehículo'}"></td>
-
-                                <!-- CORRECCIÓN: era op.ubicacionActual, el campo se llama "lugar" -->
-                                <td th:text="${op.lugar}"></td>
-
-                                <td><span th:text="${op.distancia}"></span> km</td>
-
-                                <!-- CORRECCIÓN: era op.estadoEnvio, el campo se llama "estado" -->
                                 <td>
-                                    <span th:text="${op.estado}"
-                                          th:classappend="${op.estado?.name() == 'PREPARADO'} ? 'bg-secondary' :
-                                                          (${op.estado?.name() == 'EN_RUTA'} ? 'bg-primary' :
-                                                          (${op.estado?.name() == 'EN_REPARTO'} ? 'bg-warning text-dark' :
-                                                          (${op.estado?.name() == 'ENTREGADO'} ? 'bg-success' : 'bg-secondary')))"
-                                          class="badge p-2">
+                                    <span class="val-mono val-muted"
+                                          th:text="${#temporals.format(op.fecha, 'dd/MM/yyyy')}">
                                     </span>
                                 </td>
-
                                 <td>
-                                    <a th:href="@{/operaciones/editar/{id}(id=${op.id})}" class="btn btn-sm btn-outline-primary" title="Editar">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a th:href="@{/operaciones/borrar/{id}(id=${op.id})}"
-                                       class="btn btn-sm btn-outline-danger"
-                                       onclick="return confirm('¿Seguro que quieres eliminar esta planificación?');" title="Eliminar">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-                                    <a th:href="@{/operaciones/historial/{id}(id=${op.envio.id})}" class="btn btn-sm btn-outline-secondary" title="Ver historial del envío">
-                                        <i class="bi bi-clock-history"></i>
-                                    </a>
+                                    <span class="val-blue val-bold"
+                                          th:text="${op.envio != null ? op.envio.codigo : 'Sin Código'}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="plate-chip"
+                                          th:text="${op.vehiculo != null ? op.vehiculo.matricula : 'N/A'}">
+                                    </span>
+                                </td>
+                                <td th:text="${op.lugar}" style="max-width:160px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></td>
+                                <td>
+                                    <span class="val-mono"><span th:text="${op.distancia}"></span> km</span>
+                                </td>
+                                <td>
+                                    <span class="val-mono val-muted"
+                                          th:text="${op.fechaEstimadaEntrega != null ? #temporals.format(op.fechaEstimadaEntrega, 'dd/MM/yyyy') : 'Pendiente'}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="chip-estado"
+                                          th:classappend="'chip-' + ${op.estado?.name()}"
+                                          th:text="${op.estado?.name()?.replace('_', ' ')}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <a sec:authorize="hasRole('ADMINISTRADOR')"
+                                           th:href="@{/operaciones/editar/{id}(id=${op.id})}"
+                                           class="btn-action edit" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a sec:authorize="hasRole('ADMINISTRADOR')"
+                                           th:href="@{/operaciones/borrar/{id}(id=${op.id})}"
+                                           class="btn-action danger"
+                                           onclick="return confirm('¿Seguro que quieres eliminar esta operación?');"
+                                           title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                        <a th:href="@{/operaciones/historial/{id}(id=${op.envio.id})}"
+                                           class="btn-action hist" title="Trazabilidad del envío">
+                                            <i class="bi bi-clock-history"></i>
+                                        </a>
+                                        <a th:href="@{/operaciones/{id}/estados(id=${op.id})}"
+                                           class="btn-action info" title="Historial de estados">
+                                            <i class="bi bi-arrow-left-right"></i>
+                                        </a>
+                                        <a sec:authorize="hasRole('ADMINISTRADOR')"
+                                           th:if="${op.estado?.name() != 'ENTREGADO'}"
+                                           th:href="@{/operaciones/{id}/reasignar(id=${op.id})}"
+                                           class="btn-action warn" title="Reasignar vehículo">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
-                            <tr th:if="${#lists.isEmpty(operaciones)}">
-                                <td colspan="7" class="text-muted p-4">No hay servicios planificados actualmente.</td>
+                            <tr th:if="${#lists.isEmpty(operaciones)}" class="empty-row">
+                                <td colspan="8">
+                                    <i class="bi bi-inbox me-2"></i>No hay servicios planificados actualmente.
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+
         </div>
     </div>
 
+    <div th:replace="~{fragments/toast :: notificacion}"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
