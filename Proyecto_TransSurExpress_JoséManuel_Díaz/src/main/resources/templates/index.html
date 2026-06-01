@@ -1,176 +1,250 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TransSur Express - Panel de Control</title>
+    <title>TransSur Express — Panel de Control</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        .card-counter {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .card-counter:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
+    <link th:href="@{/css/index.css}" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-        <div class="container">
-            <a class="navbar-brand fw-bold" th:href="@{/}">
-                <i class="bi bi-truck me-2"></i>TransSur Express
+    <nav class="navbar-dash">
+        <div class="container d-flex align-items-center gap-3">
+            <a class="nav-brand me-3" th:href="@{/}">
+                <i class="bi bi-truck-front-fill"></i>
+                TransSur<span class="accent">Express</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto fw-medium align-items-center">
-                    <li class="nav-item"><a class="nav-item nav-link" th:href="@{/envios}">Envíos</a></li>
-                    <li class="nav-item"><a class="nav-item nav-link" th:href="@{/vehiculos}">Vehículos</a></li>
-                    <li class="nav-item"><a class="nav-item nav-link" th:href="@{/conductores}">Conductores</a></li>
-                    <li class="nav-item"><a class="nav-item nav-link active" th:href="@{/operaciones}">Operaciones</a></li>
-                    <li class="nav-item ms-2">
-                        <a th:href="@{/login}" class="btn btn-outline-light btn-sm">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
-                        </a>
-                    </li>
-                </ul>
+            <div class="d-flex gap-1 flex-wrap">
+                <a th:href="@{/envios}"      class="nav-link-pill"><i class="bi bi-box-seam me-1"></i>Envíos</a>
+                <a th:href="@{/vehiculos}"   class="nav-link-pill"><i class="bi bi-truck me-1"></i>Vehículos</a>
+                <a th:href="@{/conductores}" class="nav-link-pill"><i class="bi bi-person-badge me-1"></i>Conductores</a>
+                <a th:href="@{/operaciones}" class="nav-link-pill"><i class="bi bi-geo-alt me-1"></i>Operaciones</a>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <span class="nav-user" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-person-circle"></i>
+                    <span sec:authentication="name">usuario</span>
+                </span>
+                <a th:href="@{/login}"  class="btn-logout" sec:authorize="!isAuthenticated()">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Acceder
+                </a>
+                <a th:href="@{/logout}" class="btn-logout" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-box-arrow-right me-1"></i>Salir
+                </a>
             </div>
         </div>
     </nav>
 
-    <div class="container my-5">
-        
-        <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-white border shadow-sm">
-            <div class="col-lg-8 px-0">
-                <h1 class="display-5 fw-bold text-primary">Sistema de Logística Avanzada</h1>
-                <p class="lead my-3 text-muted">Bienvenido al panel central de TransSur Express. Desde aquí podrás monitorizar la flota en tiempo real, asignar conductores, planificar las hojas de ruta y controlar el flujo de mercancías de forma centralizada.</p>
+    <div class="hero">
+        <div class="container">
+            <p class="hero-eyebrow">Panel de Control</p>
+            <h1 class="hero-title">
+                Sistema de Logística<br>
+                <span class="dim">TransSur Express</span>
+            </h1>
+            <p class="hero-sub">
+                Monitorización en tiempo real de la flota, envíos y operaciones de reparto.
+            </p>
+            <div class="hero-badge">
+                <span class="dot"></span>
+                Sistema operativo
             </div>
         </div>
+    </div>
 
-        <h3 class="text-secondary mb-4"><i class="bi bi-speedometer2 me-2"></i>Estado de la Empresa</h3>
-        <div class="row g-4 mb-5">
-            
-            <div class="col-6 col-lg-3">
-                <div class="card h-100 border-0 bg-primary text-white shadow-sm card-counter">
-                    <div class="card-body d-flex align-items-center justify-content-between">
-                        <div>
-                            <h6 class="text-uppercase text-white-50 small fw-bold">Envíos Registrados</h6>
-                            <h2 class="display-6 fw-bold mb-0" th:text="${totalEnvios}">0</h2>
-                        </div>
-                        <i class="bi bi-box-seam display-4 text-white-50"></i>
+    <div class="dash-body">
+        <div class="container">
+
+            <!-- KPIs principales -->
+            <p class="section-label">Resumen general</p>
+            <div class="kpi-grid mb-4">
+
+                <a th:href="@{/envios}" class="kpi-card blue">
+                    <div class="kpi-icon"><i class="bi bi-box-seam-fill"></i></div>
+                    <div class="kpi-value" th:text="${totalEnvios}">0</div>
+                    <div class="kpi-label">Envíos registrados</div>
+                </a>
+
+                <a th:href="@{/vehiculos}" class="kpi-card green">
+                    <div class="kpi-icon"><i class="bi bi-truck-front-fill"></i></div>
+                    <div class="kpi-value" th:text="${totalVehiculos}">0</div>
+                    <div class="kpi-label">Vehículos activos</div>
+                </a>
+
+                <a th:href="@{/conductores}" class="kpi-card yellow">
+                    <div class="kpi-icon"><i class="bi bi-person-badge-fill"></i></div>
+                    <div class="kpi-value" th:text="${totalConductores}">0</div>
+                    <div class="kpi-label">Conductores en plantilla</div>
+                </a>
+
+                <a th:href="@{/operaciones}" class="kpi-card orange">
+                    <div class="kpi-icon"><i class="bi bi-journal-check"></i></div>
+                    <div class="kpi-value" th:text="${totalOperaciones}">0</div>
+                    <div class="kpi-label">Operaciones totales</div>
+                </a>
+
+                <div class="kpi-card green" style="cursor:default;">
+                    <div class="kpi-icon"><i class="bi bi-currency-euro"></i></div>
+                    <div class="kpi-value">
+                        <span th:text="${#numbers.formatDecimal(costeTotal, 1, 'POINT', 0, 'COMMA')}">0</span>
+                        <span class="kpi-suffix">€</span>
                     </div>
-                    <div class="card-footer bg-black bg-opacity-10 border-0 py-2">
-                        <a th:href="@{/envios}" class="text-white text-decoration-none small d-flex justify-content-between align-items-center">
-                            Ver listado <i class="bi bi-arrow-right-short"></i>
-                        </a>
-                    </div>
+                    <div class="kpi-label">Facturación acumulada</div>
                 </div>
+
+                <div class="kpi-card blue" style="cursor:default;">
+                    <div class="kpi-icon"><i class="bi bi-boxes"></i></div>
+                    <div class="kpi-value">
+                        <span th:text="${#numbers.formatDecimal(pesoEnTransito, 1, 'POINT', 0, 'COMMA')}">0</span>
+                        <span class="kpi-suffix">kg</span>
+                    </div>
+                    <div class="kpi-label">Kg en tránsito</div>
+                </div>
+
             </div>
 
-            <div class="col-6 col-lg-3">
-                <div class="card h-100 border-0 bg-success text-white shadow-sm card-counter">
-                    <div class="card-body d-flex align-items-center justify-content-between">
-                        <div>
-                            <h6 class="text-uppercase text-white-50 small fw-bold">Vehículos en Flota</h6>
-                            <h2 class="display-6 fw-bold mb-0" th:text="${totalVehiculos}">0</h2>
-                        </div>
-                        <i class="bi bi-truck display-4 text-white-50"></i>
-                    </div>
-                    <div class="card-footer bg-black bg-opacity-10 border-0 py-2">
-                        <a th:href="@{/vehiculos}" class="text-white text-decoration-none small d-flex justify-content-between align-items-center">
-                            Ver flota <i class="bi bi-arrow-right-short"></i>
-                        </a>
+            <!-- Estado de operaciones + últimas operaciones-->
+            <div class="row g-4 mb-4">
+
+                <!-- Barra de estados -->
+                <div class="col-lg-4">
+                    <p class="section-label">Distribución de estados</p>
+                    <div class="estado-panel h-100">
+                        <div class="estado-panel-title">Operaciones por estado</div>
+
+                        <th:block th:with="total=${opPreparadas + opEnRuta + opEnReparto + opEntregadas}">
+
+                            <div class="estado-row">
+                                <span class="estado-dot" style="background: var(--preparado);"></span>
+                                <span class="estado-name">Preparado</span>
+                                <div class="estado-bar-track">
+                                    <div class="estado-bar-fill"
+                                         th:style="${'background: var(--preparado); width: ' + (total > 0 ? (opPreparadas * 100 / total) : 0) + '%;'}">
+                                    </div>
+                                </div>
+                                <span class="estado-count" th:text="${opPreparadas}">0</span>
+                            </div>
+
+                            <div class="estado-row">
+                                <span class="estado-dot" style="background: var(--en-ruta);"></span>
+                                <span class="estado-name">En ruta</span>
+                                <div class="estado-bar-track">
+                                    <div class="estado-bar-fill"
+                                         th:style="${'background: var(--en-ruta); width: ' + (total > 0 ? (opEnRuta * 100 / total) : 0) + '%;'}">
+                                    </div>
+                                </div>
+                                <span class="estado-count" th:text="${opEnRuta}">0</span>
+                            </div>
+
+                            <div class="estado-row">
+                                <span class="estado-dot" style="background: var(--en-reparto);"></span>
+                                <span class="estado-name">En reparto</span>
+                                <div class="estado-bar-track">
+                                    <div class="estado-bar-fill"
+                                         th:style="${'background: var(--en-reparto); width: ' + (total > 0 ? (opEnReparto * 100 / total) : 0) + '%;'}">
+                                    </div>
+                                </div>
+                                <span class="estado-count" th:text="${opEnReparto}">0</span>
+                            </div>
+
+                            <div class="estado-row">
+                                <span class="estado-dot" style="background: var(--entregado);"></span>
+                                <span class="estado-name">Entregado</span>
+                                <div class="estado-bar-track">
+                                    <div class="estado-bar-fill"
+                                         th:style="${'background: var(--entregado); width: ' + (total > 0 ? (opEntregadas * 100 / total) : 0) + '%;'}">
+                                    </div>
+                                </div>
+                                <span class="estado-count" th:text="${opEntregadas}">0</span>
+                            </div>
+
+                        </th:block>
                     </div>
                 </div>
+
+                <!-- Últimas operaciones -->
+                <div class="col-lg-8">
+                    <p class="section-label">Actividad reciente</p>
+                    <div class="ops-panel">
+                        <div class="ops-panel-header">
+                            <span class="ops-panel-title">Últimas operaciones</span>
+                            <a th:href="@{/operaciones}" class="ops-ver-mas">Ver todas →</a>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(ultimasOperaciones)}" class="ops-empty">
+                            <i class="bi bi-inbox me-2"></i>No hay operaciones registradas todavía.
+                        </div>
+
+                        <div th:each="op : ${ultimasOperaciones}" class="op-row">
+                            <span class="op-codigo"
+                                  th:text="${op.envio != null ? op.envio.codigo : 'N/A'}">
+                                ENV-2026-001
+                            </span>
+                            <span class="op-ruta">
+                                <span th:text="${op.envio != null ? op.envio.origen : '-'}">Sevilla</span>
+                                <span class="sep">›</span>
+                                <span th:text="${op.envio != null ? op.envio.destino : '-'}">Madrid</span>
+                            </span>
+                            <span class="op-vehiculo"
+                                  th:text="${op.vehiculo != null ? op.vehiculo.matricula : 'N/A'}">
+                                1234-BBB
+                            </span>
+                            <span th:classappend="'chip-' + ${op.estado?.name()}"
+                                  class="estado-chip"
+                                  th:text="${op.estado?.name()?.replace('_', ' ')}">
+                                EN RUTA
+                            </span>
+                            <span class="op-fecha"
+                                  th:text="${op.fecha != null ? #temporals.format(op.fecha, 'dd MMM') : '-'}">
+                                20 Mayo
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="col-6 col-lg-3">
-                <div class="card h-100 border-0 bg-warning text-dark shadow-sm card-counter">
-                    <div class="card-body d-flex align-items-center justify-content-between">
-                        <div>
-                            <h6 class="text-uppercase text-black-50 small fw-bold">Conductores</h6>
-                            <h2 class="display-6 fw-bold mb-0" th:text="${totalConductores}">0</h2>
-                        </div>
-                        <i class="bi bi-person-badge display-4 text-black-50"></i>
-                    </div>
-                    <div class="card-footer bg-black bg-opacity-10 border-0 py-2">
-                        <a th:href="@{/conductores}" class="text-dark text-decoration-none small d-flex justify-content-between align-items-center">
-                            Ver plantilla <i class="bi bi-arrow-right-short"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <hr class="dash-divider">
 
-            <div class="col-6 col-lg-3">
-                <div class="card h-100 border-0 bg-danger text-white shadow-sm card-counter">
-                    <div class="card-body d-flex align-items-center justify-content-between">
-                        <div>
-                            <h6 class="text-uppercase text-white-50 small fw-bold">Servicios / Rutas</h6>
-                            <h2 class="display-6 fw-bold mb-0" th:text="${rutasActivas}">0</h2>
-                        </div>
-                        <i class="bi bi-journal-check display-4 text-white-50"></i>
-                    </div>
-                    <div class="card-footer bg-black bg-opacity-10 border-0 py-2">
-                        <a th:href="@{/operaciones}" class="text-white text-decoration-none small d-flex justify-content-between align-items-center">
-                            Seguimiento <i class="bi bi-arrow-right-short"></i>
-                        </a>
-                    </div>
-                </div>
+            <!-- Módulos de acceso rápido -->
+            <p class="section-label">Acceso rápido</p>
+            <div class="modulo-grid">
+
+                <a th:href="@{/envios/nuevo}" class="modulo-card m-blue">
+                    <div class="modulo-icon-wrap"><i class="bi bi-plus-circle-fill"></i></div>
+                    <p class="modulo-name">Nuevo envío</p>
+                    <p class="modulo-desc">Registra un nuevo paquete con origen, destino y peso.</p>
+                    <span class="modulo-arrow"><i class="bi bi-arrow-right"></i></span>
+                </a>
+
+                <a th:href="@{/operaciones/nueva}" class="modulo-card m-orange">
+                    <div class="modulo-icon-wrap"><i class="bi bi-calendar-plus-fill"></i></div>
+                    <p class="modulo-name">Planificar ruta</p>
+                    <p class="modulo-desc">Asigna un envío a un vehículo y define el tramo de reparto.</p>
+                    <span class="modulo-arrow"><i class="bi bi-arrow-right"></i></span>
+                </a>
+
+                <a th:href="@{/vehiculos}" class="modulo-card m-green">
+                    <div class="modulo-icon-wrap"><i class="bi bi-truck-front-fill"></i></div>
+                    <p class="modulo-name">Gestión de flota</p>
+                    <p class="modulo-desc">Consulta capacidades y estado de cada vehículo activo.</p>
+                    <span class="modulo-arrow"><i class="bi bi-arrow-right"></i></span>
+                </a>
+
+                <a th:href="@{/conductores}" class="modulo-card m-yellow">
+                    <div class="modulo-icon-wrap"><i class="bi bi-person-badge-fill"></i></div>
+                    <p class="modulo-name">Plantilla</p>
+                    <p class="modulo-desc">Consulta o actualiza los datos del personal de conducción.</p>
+                    <span class="modulo-arrow"><i class="bi bi-arrow-right"></i></span>
+                </a>
+
             </div>
 
         </div>
-
-        <h3 class="text-secondary mb-4"><i class="bi bi-grid-fill me-2"></i>Módulos de Gestión</h3>
-        <div class="row g-4">
-            
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 p-3 bg-white">
-                    <div class="card-body text-center">
-                        <div class="p-3 bg-primary bg-opacity-10 rounded-circle d-inline-block mb-3">
-                            <i class="bi bi-box-seam text-primary fs-3"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Gestión de Envíos</h5>
-                        <p class="card-text text-muted small">Registra nuevos paquetes, gestiona el peso de la mercancía, puntos de origen y destinos.</p>
-                        <a th:href="@{/envios}" class="btn btn-outline-primary btn-sm w-100 mt-2">Acceder al Módulo</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 p-3 bg-white">
-                    <div class="card-body text-center">
-                        <div class="p-3 bg-success bg-opacity-10 rounded-circle d-inline-block mb-3">
-                            <i class="bi bi-person-video2 text-success fs-3"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Flota y Personal</h5>
-                        <p class="card-text text-muted small">Asigna conductores a vehículos específicos y controla las capacidades de carga máxima.</p>
-                        <div class="d-flex gap-2 mt-2">
-                            <a th:href="@{/vehiculos}" class="btn btn-outline-success btn-sm w-50">Vehículos</a>
-                            <a th:href="@{/conductores}" class="btn btn-outline-success btn-sm w-50">Conductores</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 p-3 bg-white">
-                    <div class="card-body text-center">
-                        <div class="p-3 bg-danger bg-opacity-10 rounded-circle d-inline-block mb-3">
-                            <i class="bi bi-geo-alt text-danger fs-3"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Planificación de Rutas</h5>
-                        <p class="card-text text-muted small">Controla estados, calcula costes automáticos y evita solapamientos de fechas.</p>
-                        <a th:href="@{/operaciones}" class="btn btn-outline-danger btn-sm w-100 mt-2">Planificar / Seguimiento</a>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
