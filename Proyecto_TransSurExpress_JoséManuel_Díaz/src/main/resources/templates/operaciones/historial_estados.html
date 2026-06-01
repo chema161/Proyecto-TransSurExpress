@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,142 +9,189 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
     <link th:href="@{/css/index.css}" rel="stylesheet">
-    <link th:href="@{/css/lista-dark.css}" rel="stylesheet">
+    <link th:href="@{/css/lista.css}" rel="stylesheet">
 </head>
-<body>
+<body data-bs-theme="light">
 
+    <!-- ── Navbar ── -->
     <nav class="navbar-dash">
         <div class="container d-flex align-items-center gap-3">
             <a class="nav-brand me-3" th:href="@{/}">
                 <i class="bi bi-truck-front-fill"></i>
                 TransSur<span class="accent">Express</span>
             </a>
-            <div class="ms-auto">
-                <a th:href="@{/operaciones}" class="btn-volver-dark">
-                    <i class="bi bi-arrow-left"></i> Volver a operaciones
+            <div class="d-flex gap-3 flex-wrap">
+                <a th:href="@{/envios}"      class="nav-link-pill"><i class="bi bi-box-seam me-1"></i>Envíos</a>
+                <a th:href="@{/vehiculos}"   class="nav-link-pill"><i class="bi bi-truck me-1"></i>Vehículos</a>
+                <a th:href="@{/conductores}" class="nav-link-pill"><i class="bi bi-person-badge me-1"></i>Conductores</a>
+                <a th:href="@{/operaciones}" class="nav-link-pill active"><i class="bi bi-geo-alt me-1"></i>Operaciones</a>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <span class="nav-user" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-person-circle"></i>
+                    <span sec:authentication="name">usuario</span>
+                </span>
+                <a th:href="@{/logout}" class="btn-logout" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-box-arrow-right me-1"></i>Salir
                 </a>
             </div>
         </div>
     </nav>
 
-    <!-- ── Header ── -->
-    <div class="hist-header" th:if="${operacion != null}">
-        <div class="container" style="position:relative; z-index:5;">
-            <div class="codigo-badge"
-                 th:text="${operacion.envio != null ? operacion.envio.codigo : 'SIN CÓDIGO'}">
-                ENV-2026-001
-            </div>
-            <h1 class="envio-title">Historial de Cambios de Estado</h1>
-            <div class="ruta-visual">
-                <span class="ciudad" th:text="${operacion.envio != null ? operacion.envio.origen : '-'}">Sevilla</span>
-                <i class="bi bi-arrow-right flecha-ruta"></i>
-                <span class="ciudad" th:text="${operacion.envio != null ? operacion.envio.destino : '-'}">Madrid</span>
-            </div>
-            <div class="info-chips-dark mt-3">
-                <span class="chip-dark">
-                    <i class="bi bi-truck"></i>
-                    <span th:text="${operacion.vehiculo != null ? operacion.vehiculo.matricula : 'N/A'}">1234-BBB</span>
-                </span>
-                <span class="chip-dark">
-                    <i class="bi bi-geo-alt"></i>
-                    <span th:text="${operacion.lugar}">Almacén Central</span>
-                </span>
-                <span class="chip-dark">
-                    <i class="bi bi-calendar3"></i>
-                    <span th:text="${#temporals.format(operacion.fecha, 'dd MMM yyyy')}">20 May 2026</span>
-                </span>
-                <span class="chip-dark">
-                    <i class="bi bi-clock-history"></i>
-                    <span th:text="${#lists.size(historialEstados) + ' registros'}">3 registros</span>
-                </span>
-            </div>
+    <!-- ── Page Hero ── -->
+    <div class="page-hero">
+        <div class="container">
+            <p class="hero-eyebrow">Seguimiento de rutas</p>
+            <h1 class="page-title">
+                <i class="bi bi-arrow-left-right me-2" style="color:var(--azul); font-size:1.5rem;"></i>
+                Historial de Cambios de Estado
+            </h1>
         </div>
     </div>
 
-    <div class="hist-header" th:unless="${operacion != null}">
-        <div class="container" style="position:relative; z-index:5;">
-            <div class="codigo-badge">SIN DATOS</div>
-            <h1 class="envio-title">Historial de Cambios de Estado</h1>
-        </div>
-    </div>
+    <div class="dash-body">
+        <div class="container">
 
-    <!-- ── Timeline ── -->
-    <div class="container" style="position:relative; z-index:10;">
-        <div class="timeline-container-dark">
+            <!-- ── Cabecera de la operación ── -->
+            <div th:if="${operacion != null}">
 
-            <div th:if="${#lists.isEmpty(historialEstados)}" class="empty-state-dark">
-                <div class="empty-icon-dark"><i class="bi bi-clock-history"></i></div>
-                <h5>Sin cambios registrados</h5>
-                <p>Esta operación todavía no tiene cambios de estado en el historial.</p>
-            </div>
-
-            <div th:if="${!#lists.isEmpty(historialEstados)}">
-                <p class="section-label"><i class="bi bi-arrow-left-right me-2"></i>Registro de cambios de estado</p>
-                <div class="timeline-dark">
-                    <div class="timeline-item-dark" th:each="entrada : ${historialEstados}">
-
-                        <div th:classappend="'dot-' + ${entrada.estadoNuevo.name()}" class="timeline-dot-dark">
-                            <i class="bi bi-circle-fill" style="font-size:0.5rem;"></i>
-                        </div>
-
-                        <div th:classappend="'border-' + ${entrada.estadoNuevo.name()}" class="timeline-card-dark">
-                            <div class="card-top-dark">
-
-                                <!-- Transición de estado -->
-                                <span class="d-flex align-items-center flex-wrap gap-1">
-                                    <span th:if="${entrada.estadoAnterior == null}" class="creacion-tag">
-                                        <i class="bi bi-plus-circle me-1"></i>Creación
-                                    </span>
-                                    <span th:if="${entrada.estadoAnterior != null}"
-                                          class="estado-anterior-text"
-                                          th:text="${entrada.estadoAnterior.name().replace('_', ' ')}">
-                                    </span>
-                                    <i th:if="${entrada.estadoAnterior != null}" class="bi bi-arrow-right arrow-icon"></i>
-                                    <span class="pill-estado"
-                                          th:classappend="'pill-' + ${entrada.estadoNuevo.name()}"
-                                          th:text="${entrada.estadoNuevo.name().replace('_', ' ')}">
-                                    </span>
-                                </span>
-
-                                <!-- Usuario -->
-                                <span class="usuario-chip">
-                                    <i class="bi bi-person-fill me-1"></i>
-                                    <span th:text="${entrada.usuario}">admin</span>
-                                </span>
-                            </div>
-
-                            <div class="card-meta-dark">
-                                <div class="meta-item-dark">
-                                    <i class="bi bi-calendar3"></i>
-                                    <strong th:text="${#temporals.format(entrada.fechaHora, 'dd MMM yyyy')}">20 May 2026</strong>
-                                </div>
-                                <div class="meta-item-dark hora-mono">
-                                    <i class="bi bi-clock"></i>
-                                    <span th:text="${#temporals.format(entrada.fechaHora, 'HH:mm:ss')}">14:32:05</span>
-                                </div>
-                            </div>
-                        </div>
-
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                    <span class="val-blue val-bold"
+                          style="font-size:1.25rem; font-family:'Space Mono',monospace;"
+                          th:text="${operacion.envio != null ? operacion.envio.codigo : 'SIN CÓDIGO'}">
+                        ENV-2026-001
+                    </span>
+                    <div class="vr"></div>
+                    <span class="text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>
+                        <span th:text="${operacion.envio != null ? operacion.envio.origen : '-'}">Sevilla</span>
+                        <i class="bi bi-arrow-right mx-1"></i>
+                        <span th:text="${operacion.envio != null ? operacion.envio.destino : '-'}">Madrid</span>
+                    </span>
+                    <div class="vr"></div>
+                    <span class="val-mono text-muted">
+                        <i class="bi bi-truck me-1"></i>
+                        <span th:text="${operacion.vehiculo != null ? operacion.vehiculo.matricula : 'N/A'}">1234-BBB</span>
+                    </span>
+                    <span class="val-mono text-muted">
+                        <i class="bi bi-calendar3 me-1"></i>
+                        <span th:text="${#temporals.format(operacion.fecha, 'dd/MM/yyyy')}">20/05/2026</span>
+                    </span>
+                    <span class="val-mono text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>
+                        <span th:text="${operacion.lugar}">Almacén Central</span>
+                    </span>
+                    <div class="ms-auto">
+                        <a th:href="@{/operaciones}"
+                           class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+                            <i class="bi bi-arrow-left"></i> Volver a operaciones
+                        </a>
                     </div>
+                </div>
+
+                <!-- ── Tabla de historial de estados ── -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <p class="section-label mb-0">
+                        <i class="bi bi-arrow-left-right me-1"></i>
+                        Registro de cambios de estado
+                        <span class="text-muted fw-normal ms-1"
+                              th:text="'(' + ${#lists.size(historialEstados)} + ' registros)'"></span>
+                    </p>
+                </div>
+
+                <!-- Sin cambios -->
+                <div th:if="${#lists.isEmpty(historialEstados)}"
+                     class="card shadow-sm p-5 text-center text-muted">
+                    <i class="bi bi-clock-history fs-1 mb-3"></i>
+                    <h5>Sin cambios registrados</h5>
+                    <p class="mb-0">Esta operación todavía no tiene cambios de estado en el historial.</p>
+                </div>
+
+                <!-- Tabla -->
+                <div th:if="${!#lists.isEmpty(historialEstados)}"
+                     class="card shadow-sm overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Fecha y Hora</th>
+                                    <th>Estado Anterior</th>
+                                    <th></th>
+                                    <th>Estado Nuevo</th>
+                                    <th>Usuario</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="entrada : ${historialEstados}">
+                                    <!-- Fecha y hora -->
+                                    <td>
+                                        <div class="val-mono" style="font-size:.85rem;"
+                                             th:text="${#temporals.format(entrada.fechaHora, 'dd/MM/yyyy')}">
+                                        </div>
+                                        <div class="val-mono val-muted" style="font-size:.78rem;"
+                                             th:text="${#temporals.format(entrada.fechaHora, 'HH:mm:ss')}">
+                                        </div>
+                                    </td>
+
+                                    <!-- Estado anterior -->
+                                    <td>
+                                        <span th:if="${entrada.estadoAnterior == null}"
+                                              class="text-muted fst-italic" style="font-size:.85rem;">
+                                            <i class="bi bi-plus-circle me-1" style="color:var(--verde);"></i>Creación
+                                        </span>
+                                        <span th:if="${entrada.estadoAnterior != null}"
+                                              class="chip-estado"
+                                              th:classappend="'chip-' + ${entrada.estadoAnterior.name()}"
+                                              th:text="${entrada.estadoAnterior.name().replace('_', ' ')}">
+                                        </span>
+                                    </td>
+
+                                    <!-- Flecha -->
+                                    <td style="width:30px;">
+                                        <i th:if="${entrada.estadoAnterior != null}"
+                                           class="bi bi-arrow-right text-muted"></i>
+                                    </td>
+
+                                    <!-- Estado nuevo -->
+                                    <td>
+                                        <span class="chip-estado"
+                                              th:classappend="'chip-' + ${entrada.estadoNuevo.name()}"
+                                              th:text="${entrada.estadoNuevo.name().replace('_', ' ')}">
+                                        </span>
+                                    </td>
+
+                                    <!-- Usuario -->
+                                    <td>
+                                        <span class="val-mono val-muted" style="font-size:.85rem;">
+                                            <i class="bi bi-person-fill me-1"></i>
+                                            <span th:text="${entrada.usuario}">admin</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ── Operación no encontrada ── -->
+            <div th:unless="${operacion != null}">
+                <div class="d-flex justify-content-end mb-3">
+                    <a th:href="@{/operaciones}"
+                       class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-arrow-left"></i> Volver a operaciones
+                    </a>
+                </div>
+                <div class="card shadow-sm p-5 text-center text-muted">
+                    <i class="bi bi-exclamation-circle fs-1 mb-3"></i>
+                    <h5>Operación no encontrada</h5>
+                    <p class="mb-0">No se pudo cargar la operación solicitada.</p>
                 </div>
             </div>
 
         </div>
     </div>
-
-    <!-- ── Inline styles for header elements ── -->
-    <style>
-        .envio-title { font-size: 2rem; font-weight: 700; margin: 0; color: var(--blanco); }
-        .ruta-visual { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap; }
-        .ciudad { font-family: 'Space Mono', monospace; font-size: 1rem; font-weight: 700; color: var(--blanco); }
-        .flecha-ruta { color: var(--azul); font-size: 1.4rem; }
-        .codigo-badge {
-            font-family: 'Space Mono', monospace; font-size: 0.78rem;
-            background: rgba(26,86,219,0.25); border: 1px solid rgba(26,86,219,0.5);
-            color: var(--en-ruta); padding: 0.3rem 0.8rem;
-            border-radius: 4px; display: inline-block; margin-bottom: 0.75rem; letter-spacing: 1px;
-        }
-    </style>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

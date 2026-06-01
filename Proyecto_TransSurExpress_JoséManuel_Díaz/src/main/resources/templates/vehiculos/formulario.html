@@ -9,9 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
     <link th:href="@{/css/index.css}" rel="stylesheet">
-    <link th:href="@{/css/lista-dark.css}" rel="stylesheet">
+    <link th:href="@{/css/lista.css}" rel="stylesheet">
 </head>
-<body>
+<body data-bs-theme="light">
 
     <nav class="navbar-dash">
         <div class="container d-flex align-items-center gap-3">
@@ -19,7 +19,7 @@
                 <i class="bi bi-truck-front-fill"></i>
                 TransSur<span class="accent">Express</span>
             </a>
-            <div class="d-flex gap-1 flex-wrap">
+            <div class="d-flex gap-3 flex-wrap">
                 <a th:href="@{/envios}"      class="nav-link-pill"><i class="bi bi-box-seam me-1"></i>Envíos</a>
                 <a th:href="@{/vehiculos}"   class="nav-link-pill active"><i class="bi bi-truck me-1"></i>Vehículos</a>
                 <a th:href="@{/conductores}" class="nav-link-pill"><i class="bi bi-person-badge me-1"></i>Conductores</a>
@@ -53,7 +53,7 @@
 
     <div class="dash-body">
         <div class="form-container-dark">
-            <div class="form-dark-card">
+            <div class="card shadow-sm p-4">
                 <p class="section-label mb-4"><i class="bi bi-truck me-2"></i>Ficha del Vehículo</p>
 
                 <form th:action="@{/vehiculos/guardar}" th:object="${vehiculo}" method="POST"
@@ -62,36 +62,28 @@
                     <input type="hidden" th:field="*{id}" />
                     <input type="hidden" th:field="*{activo}" />
 
-                    <!-- Matrícula -->
                     <div class="mb-3">
                         <label class="form-label">Matrícula</label>
-                        <input type="text" id="matricula"
-                               class="form-control text-uppercase"
+                        <input type="text" id="matricula" class="form-control text-uppercase"
                                th:field="*{matricula}"
                                th:classappend="${#fields.hasErrors('matricula')} ? 'is-invalid'"
                                th:readonly="${vehiculo.id != null}"
                                placeholder="Ej: 1234-ABC" />
-                        <div class="invalid-feedback"
-                             th:if="${#fields.hasErrors('matricula')}"
-                             th:errors="*{matricula}">Error</div>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('matricula')}" th:errors="*{matricula}">Error</div>
                         <div class="form-text mt-2" th:unless="${vehiculo.id != null}">
                             <i class="bi bi-info-circle me-1"></i>Formato: 4 dígitos, guion, 3 letras (ej: 1234-ABC)
                         </div>
                     </div>
 
-                    <!-- Capacidad -->
                     <div class="mb-4">
                         <label class="form-label">Capacidad Máxima de Carga (kg)</label>
                         <div class="input-group">
-                            <input type="number" step="0.01" id="capacidad"
-                                   class="form-control"
+                            <input type="number" step="0.01" id="capacidad" class="form-control"
                                    th:field="*{capacidad}"
                                    th:classappend="${#fields.hasErrors('capacidad')} ? 'is-invalid'"
                                    placeholder="0.00" />
                             <span class="input-group-text">kg</span>
-                            <div class="invalid-feedback"
-                                 th:if="${#fields.hasErrors('capacidad')}"
-                                 th:errors="*{capacidad}">Error</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('capacidad')}" th:errors="*{capacidad}">Error</div>
                         </div>
                     </div>
 
@@ -100,16 +92,16 @@
                         <div>
                             <a th:if="${vehiculo.id != null}"
                                th:href="@{/vehiculos/borrar/{id}(id=${vehiculo.id})}"
-                               class="btn btn-action danger"
+                               class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1"
                                th:data-matricula="${vehiculo.matricula}"
                                onclick="return asegurarEliminacion(this.getAttribute('data-matricula'));">
                                 <i class="bi bi-trash3-fill me-1"></i> Eliminar Vehículo
                             </a>
                         </div>
                         <div class="d-flex gap-2">
-                            <a th:href="@{/vehiculos}" class="btn-volver-dark">Cancelar</a>
+                            <a th:href="@{/vehiculos}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">Cancelar</a>
                             <button type="submit" class="btn"
-                                    th:classappend="${vehiculo.id == null} ? 'btn-success-dark' : 'btn-primary-dark'"
+                                    th:classappend="${vehiculo.id == null} ? 'btn-success d-inline-flex align-items-center gap-2 fw-bold' : 'btn-primary d-inline-flex align-items-center gap-2 fw-bold'"
                                     th:style="${vehiculo.id != null} ? 'background:var(--amarillo); border-color:var(--amarillo); color:var(--carbon); font-weight:700;' : ''"
                                     th:text="${vehiculo.id == null} ? 'Registrar Vehículo' : 'Actualizar Datos'">
                             </button>
@@ -122,64 +114,34 @@
     </div>
 
     <script>
-        // Validación frontend
-
         function validarFormulario() {
             let valido = true;
-
-            // Matrícula (crear)
             const matriculaInput = document.getElementById('matricula');
             if (!matriculaInput.readOnly) {
                 const matricula = matriculaInput.value.trim().toUpperCase();
                 const patron = /^\d{4}-[A-Z]{3}$/;
-                if (!matricula) {
-                    mostrarError(matriculaInput, 'La matrícula es obligatoria.');
-                    valido = false;
-                } else if (!patron.test(matricula)) {
-                    mostrarError(matriculaInput, 'Formato incorrecto. Usa el formato: 1234-ABC');
-                    valido = false;
-                } else {
-                    quitarError(matriculaInput);
-                    matriculaInput.value = matricula; 
-                }
+                if (!matricula) { mostrarError(matriculaInput, 'La matrícula es obligatoria.'); valido = false; }
+                else if (!patron.test(matricula)) { mostrarError(matriculaInput, 'Formato incorrecto. Usa el formato: 1234-ABC'); valido = false; }
+                else { quitarError(matriculaInput); matriculaInput.value = matricula; }
             }
-
-            // Capacidad
-            const capacidad = parseFloat(document.getElementById('capacidad').value);
             const capInput = document.getElementById('capacidad');
-            if (!capInput.value) {
-                mostrarError(capInput, 'La capacidad es obligatoria.');
-                valido = false;
-            } else if (isNaN(capacidad) || capacidad <= 0) {
-                mostrarError(capInput, 'La capacidad debe ser un número mayor que 0.');
-                valido = false;
-            } else {
-                quitarError(capInput);
-            }
-
+            const capacidad = parseFloat(capInput.value);
+            if (!capInput.value) { mostrarError(capInput, 'La capacidad es obligatoria.'); valido = false; }
+            else if (isNaN(capacidad) || capacidad <= 0) { mostrarError(capInput, 'La capacidad debe ser un número mayor que 0.'); valido = false; }
+            else { quitarError(capInput); }
             return valido;
         }
-
         function mostrarError(input, mensaje) {
             input.classList.add('is-invalid');
             let feedback = input.nextElementSibling;
-            // Si el siguiente es el span "kg" del input-group, buscar más
-            if (feedback && feedback.classList.contains('input-group-text')) {
-                feedback = feedback.nextElementSibling;
-            }
-            if (feedback && feedback.classList.contains('invalid-feedback')) {
-                feedback.textContent = mensaje;
-            }
+            if (feedback && feedback.classList.contains('input-group-text')) feedback = feedback.nextElementSibling;
+            if (feedback && feedback.classList.contains('invalid-feedback')) feedback.textContent = mensaje;
         }
-
-        function quitarError(input) {
-            input.classList.remove('is-invalid');
-        }
-
+        function quitarError(input) { input.classList.remove('is-invalid'); }
         function asegurarEliminacion(matricula) {
-            return confirm('¿Estás seguro de que quieres eliminar permanentemente el vehículo con matrícula '
-                + matricula + '?\nEsta acción podría desvincular rutas y conductores asociados.');
+            return confirm('¿Estás seguro de que quieres eliminar permanentemente el vehículo con matrícula ' + matricula + '?\nEsta acción podría desvincular rutas y conductores asociados.');
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
