@@ -9,6 +9,7 @@ import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repository
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.base.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -248,6 +249,13 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
 
     public List<HistorialEstado> obtenerHistorialEstadosPorOperacion(Long envioVehiculoId) {
         return historialRepo.findByEnvioVehiculoIdOrderByFechaHoraAsc(envioVehiculoId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        historialRepo.deleteByEnvioVehiculoId(id);
+        super.deleteById(id);
     }
 
     private LocalDate calcularFechaEstimada(LocalDate fechaInicio, Double distancia, EstadoEnvio estado) {

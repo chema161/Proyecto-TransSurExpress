@@ -10,4 +10,6 @@ import java.util.List;
 public interface HistorialEstadoRepository extends JpaRepository<HistorialEstado, Long> {
 
     List<HistorialEstado> findByEnvioVehiculoIdOrderByFechaHoraAsc(Long envioVehiculoId);
+
+    void deleteByEnvioVehiculoId(Long envioVehiculoId);
 }

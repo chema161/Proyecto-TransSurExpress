@@ -1,41 +1,68 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TransSur Express - Planificar Servicio</title>
+    <title>TransSur Express — Planificar Servicio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
+    <link th:href="@{/css/index.css}" rel="stylesheet">
+    <link th:href="@{/css/lista-dark.css}" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" th:href="@{/}"><i class="bi bi-truck me-2"></i>TransSur Express</a>
-            <a th:href="@{/operaciones}" class="btn btn-outline-light btn-sm">
-                <i class="bi bi-arrow-left"></i> Volver
+    <nav class="navbar-dash">
+        <div class="container d-flex align-items-center gap-3">
+            <a class="nav-brand me-3" th:href="@{/}">
+                <i class="bi bi-truck-front-fill"></i>
+                TransSur<span class="accent">Express</span>
             </a>
+            <div class="d-flex gap-1 flex-wrap">
+                <a th:href="@{/envios}"      class="nav-link-pill"><i class="bi bi-box-seam me-1"></i>Envíos</a>
+                <a th:href="@{/vehiculos}"   class="nav-link-pill"><i class="bi bi-truck me-1"></i>Vehículos</a>
+                <a th:href="@{/conductores}" class="nav-link-pill"><i class="bi bi-person-badge me-1"></i>Conductores</a>
+                <a th:href="@{/operaciones}" class="nav-link-pill active"><i class="bi bi-geo-alt me-1"></i>Operaciones</a>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <span class="nav-user" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-person-circle"></i>
+                    <span sec:authentication="name">usuario</span>
+                </span>
+                <a th:href="@{/login}"  class="btn-logout" sec:authorize="!isAuthenticated()">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Acceder
+                </a>
+                <a th:href="@{/logout}" class="btn-logout" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-box-arrow-right me-1"></i>Salir
+                </a>
+            </div>
         </div>
     </nav>
 
-    <div class="container" style="max-width: 600px;">
-
-        <!-- Peso excedido / Solapamiento -->
-        <div th:if="${error}" class="alert alert-danger d-flex align-items-center mb-4 shadow-sm" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
-            <span th:text="${error}">Error</span>
+    <div class="page-hero">
+        <div class="container">
+            <p class="hero-eyebrow">Planificación de rutas</p>
+            <h1 class="page-title">
+                <i th:class="${operacion.id == null} ? 'bi bi-calendar-plus me-2' : 'bi bi-pencil-square me-2'"
+                   th:style="${operacion.id == null} ? 'color:var(--verde); font-size:1.5rem;' : 'color:var(--amarillo); font-size:1.5rem;'"></i>
+                <span th:text="${operacion.id == null} ? 'Planificar Servicio' : 'Modificar Servicio'"></span>
+            </h1>
         </div>
+    </div>
 
-        <div class="card shadow border-0 mb-4">
-            <div class="card-header py-3"
-                 th:classappend="${operacion.id == null} ? 'bg-success text-white' : 'bg-warning text-dark'">
-                <h4 class="mb-0 fw-bold">
-                    <i th:class="${operacion.id == null} ? 'bi bi-calendar-plus me-2' : 'bi bi-pencil-square me-2'"></i>
-                    <span th:text="${operacion.id == null} ? 'Planificar Nuevo Servicio' : 'Modificar Servicio'"></span>
-                </h4>
+    <div class="dash-body">
+        <div class="form-container-dark">
+
+            <!-- Peso excedido / Solapamiento -->
+            <div th:if="${error}" class="alert-danger-dark d-flex align-items-center mb-4 shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                <span th:text="${error}">Error</span>
             </div>
 
-            <div class="card-body p-4">
+            <div class="form-dark-card">
+                <p class="section-label mb-4"><i class="bi bi-geo-alt me-2"></i>Detalles del Servicio</p>
+
                 <form th:action="@{/operaciones/guardar}" th:object="${operacion}" method="POST"
                       id="formOperacion" onsubmit="return validarFormulario()">
 
@@ -43,7 +70,7 @@
 
                     <!-- Envío -->
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Asignar Envío (Código):</label>
+                        <label class="form-label">Asignar Envío (Código):</label>
                         <select id="envio" name="envio" class="form-select"
                                 th:classappend="${#fields.hasErrors('envio')} ? 'is-invalid'">
                             <option value="">-- Selecciona el envío --</option>
@@ -60,7 +87,7 @@
 
                     <!-- Vehículo -->
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Asignar Vehículo (Matrícula):</label>
+                        <label class="form-label">Asignar Vehículo (Matrícula):</label>
                         <select id="vehiculo" name="vehiculo" class="form-select"
                                 th:classappend="${#fields.hasErrors('vehiculo')} ? 'is-invalid'">
                             <option value="">-- Selecciona el vehículo --</option>
@@ -77,7 +104,7 @@
 
                     <!-- Fecha -->
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Fecha:</label>
+                        <label class="form-label">Fecha:</label>
                         <input type="date" id="fecha"
                                th:field="*{fecha}"
                                class="form-control"
@@ -89,7 +116,7 @@
 
                     <!-- Lugar -->
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Punto de Control / Lugar:</label>
+                        <label class="form-label">Punto de Control / Lugar:</label>
                         <input type="text" id="lugar"
                                th:field="*{lugar}"
                                class="form-control"
@@ -102,7 +129,7 @@
 
                     <!-- Distancia -->
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Distancia del segmento (km):</label>
+                        <label class="form-label">Distancia del segmento (km):</label>
                         <div class="input-group">
                             <input type="number" step="0.1" min="0" id="distancia"
                                    th:field="*{distancia}"
@@ -113,14 +140,14 @@
                                  th:if="${#fields.hasErrors('distancia')}"
                                  th:errors="*{distancia}">Error</div>
                         </div>
-                        <div class="form-text text-muted">
+                        <div class="form-text mt-2">
                             <i class="bi bi-info-circle me-1"></i>El coste se calcula automáticamente: peso × distancia × 0,02 €
                         </div>
                     </div>
 
                     <!-- Estado -->
                     <div class="mb-4">
-                        <label class="form-label fw-semibold">Estado del Seguimiento:</label>
+                        <label class="form-label">Estado del Seguimiento:</label>
                         <select id="estado" th:field="*{estado}" class="form-select"
                                 th:classappend="${#fields.hasErrors('estado')} ? 'is-invalid'">
                             <option value="">-- Selecciona el estado --</option>
@@ -134,13 +161,14 @@
                              th:errors="*{estado}">Error</div>
                     </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn fw-bold py-2 shadow-sm"
-                                th:classappend="${operacion.id == null} ? 'btn-success' : 'btn-warning'">
-                            <i class="bi bi-save me-2"></i>
-                            <span th:text="${operacion.id == null} ? 'Registrar Servicio' : 'Actualizar Servicio'"></span>
+                    <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4"
+                         style="border-color: var(--gris-borde) !important;">
+                        <a th:href="@{/operaciones}" class="btn-volver-dark">Cancelar</a>
+                        <button type="submit" class="btn"
+                                th:classappend="${operacion.id == null} ? 'btn-success-dark' : 'btn-primary-dark'"
+                                th:style="${operacion.id != null} ? 'background:var(--amarillo); border-color:var(--amarillo); color:var(--carbon); font-weight:700;' : ''"
+                                th:text="${operacion.id == null} ? 'Registrar Servicio' : 'Actualizar Servicio'">
                         </button>
-                        <a th:href="@{/operaciones}" class="btn btn-light py-2">Cancelar</a>
                     </div>
 
                 </form>

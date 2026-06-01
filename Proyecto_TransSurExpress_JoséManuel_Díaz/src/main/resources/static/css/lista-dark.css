@@ -400,3 +400,26 @@ body {
 }
 .form-dark-card .form-text { color: var(--gris-texto); font-size: 0.78rem; }
 .form-dark-card .form-select option { background: var(--carbon-3); color: var(--blanco); }
+
+/* Custom additions for dark mode forms */
+.form-dark-card .input-group-text {
+    background: var(--carbon-3);
+    border: 1px solid var(--gris-borde);
+    color: var(--gris-texto);
+}
+.form-dark-card .is-invalid {
+    border-color: var(--rojo) !important;
+}
+.form-dark-card .invalid-feedback {
+    color: var(--rojo);
+    font-size: 0.78rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+.alert-danger-dark {
+    background: rgba(248,81,73,0.1);
+    border: 1px solid rgba(248,81,73,0.3);
+    color: var(--rojo);
+    border-radius: 10px;
+    padding: 0.75rem 1.25rem;
+}
