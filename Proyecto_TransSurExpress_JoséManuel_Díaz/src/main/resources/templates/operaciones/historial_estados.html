@@ -3,28 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TransSur Express - Historial de Estados</title>
+    <title>TransSur Express — Historial de Estados</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link th:href="@{/css/historial.css}" rel="stylesheet">
-	<link th:href="@{/css/historial_estados.css}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
+    <link th:href="@{/css/index.css}" rel="stylesheet">
+    <link th:href="@{/css/lista-dark.css}" rel="stylesheet">
 </head>
 <body>
 
-    <nav class="navbar-custom">
-        <div class="container d-flex justify-content-between align-items-center">
-            <a class="navbar-brand" th:href="@{/}">
-                <i class="bi bi-truck me-2"></i>TransSur<span>Express</span>
+    <nav class="navbar-dash">
+        <div class="container d-flex align-items-center gap-3">
+            <a class="nav-brand me-3" th:href="@{/}">
+                <i class="bi bi-truck-front-fill"></i>
+                TransSur<span class="accent">Express</span>
             </a>
-            <a th:href="@{/operaciones}" class="btn-volver">
-                <i class="bi bi-arrow-left"></i> Volver a operaciones
-            </a>
+            <div class="ms-auto">
+                <a th:href="@{/operaciones}" class="btn-volver-dark">
+                    <i class="bi bi-arrow-left"></i> Volver a operaciones
+                </a>
+            </div>
         </div>
     </nav>
 
-    <!-- Datos de la operación -->
-    <div class="envio-header" th:if="${operacion != null}" style="overflow: hidden; position: relative;">
+    <!-- ── Header ── -->
+    <div class="hist-header" th:if="${operacion != null}">
         <div class="container" style="position:relative; z-index:5;">
             <div class="codigo-badge"
                  th:text="${operacion.envio != null ? operacion.envio.codigo : 'SIN CÓDIGO'}">
@@ -36,20 +39,20 @@
                 <i class="bi bi-arrow-right flecha-ruta"></i>
                 <span class="ciudad" th:text="${operacion.envio != null ? operacion.envio.destino : '-'}">Madrid</span>
             </div>
-            <div class="info-chips mt-3">
-                <span class="chip">
+            <div class="info-chips-dark mt-3">
+                <span class="chip-dark">
                     <i class="bi bi-truck"></i>
                     <span th:text="${operacion.vehiculo != null ? operacion.vehiculo.matricula : 'N/A'}">1234-BBB</span>
                 </span>
-                <span class="chip">
+                <span class="chip-dark">
                     <i class="bi bi-geo-alt"></i>
                     <span th:text="${operacion.lugar}">Almacén Central</span>
                 </span>
-                <span class="chip">
+                <span class="chip-dark">
                     <i class="bi bi-calendar3"></i>
                     <span th:text="${#temporals.format(operacion.fecha, 'dd MMM yyyy')}">20 May 2026</span>
                 </span>
-                <span class="chip">
+                <span class="chip-dark">
                     <i class="bi bi-clock-history"></i>
                     <span th:text="${#lists.size(historialEstados) + ' registros'}">3 registros</span>
                 </span>
@@ -57,79 +60,70 @@
         </div>
     </div>
 
-    <div class="envio-header" th:unless="${operacion != null}" style="overflow: hidden; position: relative;">
+    <div class="hist-header" th:unless="${operacion != null}">
         <div class="container" style="position:relative; z-index:5;">
             <div class="codigo-badge">SIN DATOS</div>
             <h1 class="envio-title">Historial de Cambios de Estado</h1>
         </div>
     </div>
 
+    <!-- ── Timeline ── -->
     <div class="container" style="position:relative; z-index:10;">
-        <div class="timeline-container">
+        <div class="timeline-container-dark">
 
-            <!-- Sin registros -->
-            <div th:if="${#lists.isEmpty(historialEstados)}" class="empty-state">
-                <div class="empty-icon"><i class="bi bi-clock-history"></i></div>
-                <h5 class="fw-bold text-muted">Sin cambios registrados</h5>
-                <p class="text-muted small">Esta operación todavía no tiene cambios de estado en el historial.</p>
+            <div th:if="${#lists.isEmpty(historialEstados)}" class="empty-state-dark">
+                <div class="empty-icon-dark"><i class="bi bi-clock-history"></i></div>
+                <h5>Sin cambios registrados</h5>
+                <p>Esta operación todavía no tiene cambios de estado en el historial.</p>
             </div>
 
-            <!-- Timeline de cambios -->
             <div th:if="${!#lists.isEmpty(historialEstados)}">
-                <p class="timeline-title"><i class="bi bi-arrow-left-right me-2"></i>Registro de cambios de estado</p>
-                <div class="timeline">
-                    <div class="timeline-item" th:each="entrada : ${historialEstados}">
+                <p class="section-label"><i class="bi bi-arrow-left-right me-2"></i>Registro de cambios de estado</p>
+                <div class="timeline-dark">
+                    <div class="timeline-item-dark" th:each="entrada : ${historialEstados}">
 
-                        <!-- Dot con color del estado nuevo -->
-                        <div th:classappend="'dot-' + ${entrada.estadoNuevo.name()}" class="timeline-dot">
+                        <div th:classappend="'dot-' + ${entrada.estadoNuevo.name()}" class="timeline-dot-dark">
                             <i class="bi bi-circle-fill" style="font-size:0.5rem;"></i>
                         </div>
 
-                        <!-- Card -->
-                        <div th:classappend="'border-' + ${entrada.estadoNuevo.name()}" class="timeline-card">
-                            <div class="card-top">
+                        <div th:classappend="'border-' + ${entrada.estadoNuevo.name()}" class="timeline-card-dark">
+                            <div class="card-top-dark">
 
                                 <!-- Transición de estado -->
-                                <span class="lugar-nombre d-flex align-items-center flex-wrap gap-1">
-                                    <!-- Creación (sin estado anterior) -->
-                                    <span th:if="${entrada.estadoAnterior == null}" class="creacion-label">
+                                <span class="d-flex align-items-center flex-wrap gap-1">
+                                    <span th:if="${entrada.estadoAnterior == null}" class="creacion-tag">
                                         <i class="bi bi-plus-circle me-1"></i>Creación
                                     </span>
-
-                                    <!-- Cambio (con estado anterior) -->
                                     <span th:if="${entrada.estadoAnterior != null}"
-                                          th:text="${entrada.estadoAnterior.name().replace('_', ' ')}"
-                                          class="estado-anterior">
+                                          class="estado-anterior-text"
+                                          th:text="${entrada.estadoAnterior.name().replace('_', ' ')}">
                                     </span>
-                                    <i th:if="${entrada.estadoAnterior != null}"
-                                       class="bi bi-arrow-right arrow-estado"></i>
-
-                                    <!-- Estado nuevo -->
-                                    <span th:classappend="'pill-' + ${entrada.estadoNuevo.name()}"
-                                          class="estado-pill"
+                                    <i th:if="${entrada.estadoAnterior != null}" class="bi bi-arrow-right arrow-icon"></i>
+                                    <span class="pill-estado"
+                                          th:classappend="'pill-' + ${entrada.estadoNuevo.name()}"
                                           th:text="${entrada.estadoNuevo.name().replace('_', ' ')}">
                                     </span>
                                 </span>
 
-                                <!-- Badge de usuario -->
-                                <span class="usuario-badge">
+                                <!-- Usuario -->
+                                <span class="usuario-chip">
                                     <i class="bi bi-person-fill me-1"></i>
                                     <span th:text="${entrada.usuario}">admin</span>
                                 </span>
                             </div>
 
-                            <!-- Fecha y hora -->
-                            <div class="card-meta">
-                                <div class="meta-item">
+                            <div class="card-meta-dark">
+                                <div class="meta-item-dark">
                                     <i class="bi bi-calendar3"></i>
                                     <strong th:text="${#temporals.format(entrada.fechaHora, 'dd MMM yyyy')}">20 May 2026</strong>
                                 </div>
-                                <div class="meta-item hora-badge">
+                                <div class="meta-item-dark hora-mono">
                                     <i class="bi bi-clock"></i>
                                     <span th:text="${#temporals.format(entrada.fechaHora, 'HH:mm:ss')}">14:32:05</span>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -137,5 +131,20 @@
         </div>
     </div>
 
+    <!-- ── Inline styles for header elements ── -->
+    <style>
+        .envio-title { font-size: 2rem; font-weight: 700; margin: 0; color: var(--blanco); }
+        .ruta-visual { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap; }
+        .ciudad { font-family: 'Space Mono', monospace; font-size: 1rem; font-weight: 700; color: var(--blanco); }
+        .flecha-ruta { color: var(--azul); font-size: 1.4rem; }
+        .codigo-badge {
+            font-family: 'Space Mono', monospace; font-size: 0.78rem;
+            background: rgba(26,86,219,0.25); border: 1px solid rgba(26,86,219,0.5);
+            color: var(--en-ruta); padding: 0.3rem 0.8rem;
+            border-radius: 4px; display: inline-block; margin-bottom: 0.75rem; letter-spacing: 1px;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
