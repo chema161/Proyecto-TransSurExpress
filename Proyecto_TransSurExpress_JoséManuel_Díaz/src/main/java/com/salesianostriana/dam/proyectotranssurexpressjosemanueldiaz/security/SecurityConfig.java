@@ -40,7 +40,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login**", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
 
-                // Solo ADMIN puede editar y borrar
+                // Solo el admin puede editar y borrar
                 .requestMatchers("/vehiculos/editar/**", "/vehiculos/borrar/**").hasRole("ADMINISTRADOR")
                 .requestMatchers("/conductores/editar/**", "/conductores/borrar/**").hasRole("ADMINISTRADOR")
                 .requestMatchers("/envios/editar/**", "/envios/borrar/**").hasRole("ADMINISTRADOR")

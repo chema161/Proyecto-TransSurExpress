@@ -2,15 +2,6 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!--
-    Fragmento reutilizable de notificación tipo Toast.
-    Uso en cualquier plantilla:
-        <div th:replace="~{fragmentos/toast :: notificacion}"></div>
-
-    Requiere en el modelo (via RedirectAttributes):
-        - mensaje     : texto a mostrar
-        - tipoMensaje : "exito" | "edicion" | "borrado"
--->
 <div th:fragment="notificacion">
 
     <div th:if="${mensaje}"

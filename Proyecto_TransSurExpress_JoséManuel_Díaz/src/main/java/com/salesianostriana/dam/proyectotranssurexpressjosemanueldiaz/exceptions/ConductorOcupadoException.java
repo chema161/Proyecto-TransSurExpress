@@ -5,6 +5,7 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exception
  * ya está activo en otra ruta diferente en la misma fecha.
  */
 public class ConductorOcupadoException extends RuntimeException {
+	
     public ConductorOcupadoException(String mensaje) {
         super(mensaje);
     }

@@ -114,7 +114,7 @@ public class OperacionController {
         return "operaciones/historial_envio";
     }
 
-    /** Historial de cambios de estado de una operación concreta */
+    // Historial de cambios de estado de una operación concreta 
     @GetMapping("/{id}/estados")
     public String verHistorialEstados(@PathVariable Long id, Model model) {
         operacionService.findById(id).ifPresent(op -> model.addAttribute("operacion", op));
@@ -122,7 +122,7 @@ public class OperacionController {
         return "operaciones/historial_estados";
     }
 
-    /** Formulario de reasignación de vehículo */
+    // Formulario de reasignación de vehículo 
     @GetMapping("/{id}/reasignar")
     public String mostrarReasignacion(@PathVariable Long id, Model model) {
         operacionService.findById(id).ifPresentOrElse(
@@ -133,7 +133,7 @@ public class OperacionController {
         return "operaciones/reasignar_vehiculo";
     }
 
-    /** Procesa la reasignación de vehículo */
+    // Procesa la reasignación de vehículo 
     @PostMapping("/{id}/reasignar")
     public String procesarReasignacion(@PathVariable Long id,
                                        @RequestParam("nuevoVehiculoId") Long nuevoVehiculoId,

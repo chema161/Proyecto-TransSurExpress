@@ -50,7 +50,7 @@ public class VehiculoController {
                 getActor(auth) + " ha registrado el vehículo " + vehiculo.getMatricula() + " correctamente.");
             redirectAttrs.addFlashAttribute("tipoMensaje", "exito");
         } else {
-            // Editar: solo admin puede llegar aquí (bloqueado por SecurityConfig)
+            // Editar: solo el admin puede llegar aquí (bloqueado por SecurityConfig)
             redirectAttrs.addFlashAttribute("mensaje",
                 "El administrador ha actualizado los datos del vehículo " + vehiculo.getMatricula() + ".");
             redirectAttrs.addFlashAttribute("tipoMensaje", "edicion");
@@ -67,7 +67,7 @@ public class VehiculoController {
 
     @GetMapping("/borrar/{id}")
     public String borrarVehiculo(@PathVariable Long id, RedirectAttributes redirectAttrs) {
-        // Solo admin puede llegar aquí (bloqueado por SecurityConfig)
+        // Solo el admin puede llegar aquí (bloqueado por SecurityConfig)
         service.findById(id).ifPresent(v -> {
             service.deleteById(id);
             redirectAttrs.addFlashAttribute("mensaje",

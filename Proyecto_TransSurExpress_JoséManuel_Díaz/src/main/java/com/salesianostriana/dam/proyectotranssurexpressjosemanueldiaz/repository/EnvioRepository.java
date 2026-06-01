@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface EnvioRepository extends JpaRepository<Envio, Long> {
+	
     // Consulta por código
     List<Envio> findByCodigoContainingIgnoreCase(String codigo);
 

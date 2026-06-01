@@ -5,6 +5,7 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exception
  * El código de envío debe ser único (ej: ENV-2026-001).
  */
 public class CodigoEnvioDuplicadoException extends RuntimeException {
+	
     public CodigoEnvioDuplicadoException(String mensaje) {
         super(mensaje);
     }

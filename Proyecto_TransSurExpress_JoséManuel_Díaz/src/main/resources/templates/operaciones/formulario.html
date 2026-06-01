@@ -20,7 +20,7 @@
 
     <div class="container" style="max-width: 600px;">
 
-        <!-- Error de lógica de negocio (peso excedido / solapamiento) -->
+        <!-- Peso excedido / Solapamiento -->
         <div th:if="${error}" class="alert alert-danger d-flex align-items-center mb-4 shadow-sm" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
             <span th:text="${error}">Error</span>
@@ -149,7 +149,7 @@
     </div>
 
     <script>
-        // ── Validación frontend ─────────────────────────────────────────────────
+        // Validación frontend 
 
         function validarFormulario() {
             let valido = true;

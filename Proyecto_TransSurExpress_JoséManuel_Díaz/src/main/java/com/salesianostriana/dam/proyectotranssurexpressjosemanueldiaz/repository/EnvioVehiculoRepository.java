@@ -13,8 +13,11 @@ import java.util.List;
 public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Long> {
 
     List<EnvioVehiculo> findByEstado(EstadoEnvio estado);
+    
     List<EnvioVehiculo> findByEnvioId(Long envioId);
+    
     List<EnvioVehiculo> findByVehiculoId(Long vehiculoId);
+    
     List<EnvioVehiculo> findByEnvioIdOrderByFechaAsc(Long envioId);
 
     @Query("""
@@ -44,7 +47,7 @@ public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Lo
     // Bloquea crear un tramo duplicado: mismo vehículo + misma fecha + mismo envío.
     // Un vehículo si puede llevar varios envíos distintos el mismo día.
 
-    /** Al crear: tramo duplicado exacto */
+    // Al crear: tramo duplicado exacto 
     boolean existsByVehiculoAndFechaAndEnvioAndEstadoIn(
             Vehiculo vehiculo,
             LocalDate fecha,
@@ -52,7 +55,7 @@ public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Lo
             List<EstadoEnvio> estados
     );
 
-    /** Al editar: tramo duplicado exacto, excluyendo la operación actual */
+    // Al editar: tramo duplicado exacto, excluyendo la operación actual 
     boolean existsByVehiculoAndFechaAndEnvioAndEstadoInAndIdNot(
             Vehiculo vehiculo,
             LocalDate fecha,
@@ -64,14 +67,14 @@ public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Lo
     // Un envío activo solo puede estar asignado a un vehículo a la vez.
     // Ningún otro vehículo puede coger un envío que ya está en curso.
 
-    /** Al crear: el envío ya está activo con un vehículo diferente */
+    // Al crear: el envío ya está activo con un vehículo diferente 
     boolean existsByEnvioAndVehiculoNotAndEstadoIn(
             Envio envio,
             Vehiculo vehiculo,
             List<EstadoEnvio> estados
     );
 
-    /** Al editar: igual, excluyendo la operación actual */
+    // Al editar: igual, excluyendo la operación actual 
     boolean existsByEnvioAndVehiculoNotAndEstadoInAndIdNot(
             Envio envio,
             Vehiculo vehiculo,
@@ -80,7 +83,6 @@ public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Lo
     );
 
     // Evita que un conductor esté activo en dos vehículos distintos el mismo día.
-
     @Query("""
             SELECT CASE WHEN COUNT(ev) > 0 THEN true ELSE false END
             FROM EnvioVehiculo ev

@@ -5,6 +5,7 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exception
  * Por ejemplo: peso inferior al umbral mínimo permitido (0.5 kg).
  */
 public class EnvioInvalidoException extends RuntimeException {
+	
     public EnvioInvalidoException(String mensaje) {
         super(mensaje);
     }

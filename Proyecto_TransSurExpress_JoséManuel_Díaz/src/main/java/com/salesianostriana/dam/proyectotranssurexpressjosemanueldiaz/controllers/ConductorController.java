@@ -55,7 +55,7 @@ public class ConductorController {
                 getActor(auth) + " ha dado de alta al conductor " + conductor.getNombre() + ".");
             redirectAttrs.addFlashAttribute("tipoMensaje", "exito");
         } else {
-            // Editar: solo admin puede llegar aquí
+            // Editar: solo el admin puede llegar aquí
             redirectAttrs.addFlashAttribute("mensaje",
                 "El administrador ha actualizado la ficha de " + conductor.getNombre() + ".");
             redirectAttrs.addFlashAttribute("tipoMensaje", "edicion");

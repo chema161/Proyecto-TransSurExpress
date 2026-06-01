@@ -99,12 +99,12 @@
     </div>
 
     <script>
-        // ── Validación frontend ─────────────────────────────────────────────────
+        // Validación frontend 
 
         function validarFormulario() {
             let valido = true;
 
-            // Nombre (solo al crear, es readonly al editar)
+            // Nombre (solo al crear)
             const nombreInput = document.getElementById('nombre');
             if (!nombreInput.readOnly) {
                 const nombre = nombreInput.value.trim();

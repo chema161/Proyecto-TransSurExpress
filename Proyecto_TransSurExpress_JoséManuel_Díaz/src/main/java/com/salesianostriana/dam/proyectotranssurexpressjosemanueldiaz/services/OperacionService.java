@@ -67,7 +67,7 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
                     .orElse(null);
         }
 
-        // ── 1. Peso mínimo ────────────────────────────────────────────────────
+        // 1. Peso mínimo 
         if (peso < PESO_MINIMO_KG) {
             throw new EnvioInvalidoException(
                 "El envío no puede planificarse: su peso (" + peso + " kg) " +
@@ -75,7 +75,7 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
             );
         }
 
-        // ── 2. Peso máximo (capacidad del vehículo) ───────────────────────────
+        // 2. Peso máximo (capacidad del vehículo) 
         double pesoAsignado = repository.sumarPesoEnviosActivosPorVehiculoExcluyendoOperacion(
                 op.getVehiculo().getId(), estadosActivos, op.getId());
         double capacidadDisponible = capacidad - pesoAsignado;
@@ -88,7 +88,7 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
             );
         }
 
-        // ── 3. Sin tramos duplicados ──────────────────────────────────────────
+        // 3. Sin tramos duplicados 
         boolean tramoDuplicado = esNueva
             ? repository.existsByVehiculoAndFechaAndEnvioAndEstadoIn(
                     op.getVehiculo(), op.getFecha(), op.getEnvio(), estadosActivos)
@@ -103,7 +103,7 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
             );
         }
 
-        // ── 4. Exclusividad del envío ─────────────────────────────────────────
+        // 4. Exclusividad del envío
         boolean envioOcupado = esNueva
             ? repository.existsByEnvioAndVehiculoNotAndEstadoIn(
                     op.getEnvio(), op.getVehiculo(), estadosActivos)
@@ -118,7 +118,7 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
             );
         }
 
-        // ── 5. Conductor disponible ───────────────────────────────────────────
+        // 5. Conductor disponible 
         List<Conductor> conductores = op.getVehiculo().getConductores();
         if (conductores != null && !conductores.isEmpty()) {
             if (repository.existsConductorOcupadoEnOtroVehiculo(
@@ -132,7 +132,7 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
             }
         }
 
-        // ── 6. Cálculo automático del coste ───────────────────────────────────
+        // 6. Cálculo automático del coste 
         double nuevoCoste = peso * op.getDistancia() * TARIFA_POR_KG_KM;
         op.getEnvio().setCoste(nuevoCoste);
         envioRepo.save(op.getEnvio());
@@ -141,7 +141,7 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
 
         EnvioVehiculo guardada = repository.save(op);
 
-        // ── 7. Registro de historial de estado ────────────────────────────────
+        // 7. Registro de historial de estado 
         boolean estadoCambio = esNueva || (estadoAnterior != op.getEstado());
         if (estadoCambio) {
             HistorialEstado entrada = HistorialEstado.builder()
@@ -168,18 +168,18 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
      */
     public void reasignarVehiculo(Long operacionId, Long nuevoVehiculoId, String usuario) {
 
-        // ── 1. Operación debe existir ─────────────────────────────────────────
+        // 1. Operación debe existir 
         EnvioVehiculo op = repository.findById(operacionId)
                 .orElseThrow(() -> new ReasignacionInvalidaException(
                         "No se encontró la operación con ID " + operacionId + "."));
 
-        // ── 2. No se puede reasignar si ya está entregada ─────────────────────
+        // 2. No se puede reasignar si ya está entregada 
         if (op.getEstado() == EstadoEnvio.ENTREGADO) {
             throw new ReasignacionInvalidaException(
                 "No se puede reasignar el vehículo de un envío ya entregado.");
         }
 
-        // ── 3. El nuevo vehículo debe ser distinto del actual ─────────────────
+        // 3. El nuevo vehículo debe ser distinto del actual 
         if (op.getVehiculo().getId().equals(nuevoVehiculoId)) {
             throw new ReasignacionInvalidaException(
                 "El vehículo seleccionado ya está asignado a esta operación.");
@@ -189,7 +189,7 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
                 .orElseThrow(() -> new ReasignacionInvalidaException(
                         "No se encontró el vehículo con ID " + nuevoVehiculoId + "."));
 
-        // ── 4. Peso del envío no puede superar la capacidad del nuevo vehículo ─
+        // 4. El peso del envío no puede superar la capacidad del nuevo vehículo 
         if (!nuevoVehiculo.isActivo()) {
             throw new ReasignacionInvalidaException(
                 "El vehiculo " + nuevoVehiculo.getMatricula() +
@@ -211,7 +211,7 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
                 " (" + capacidadDisponible + " kg disponibles de " + nuevoVehiculo.getCapacidad() + " kg).");
         }
 
-        // ── 5. Conductor del nuevo vehículo no puede estar ocupado ese día ─────
+        // 5. El conductor del nuevo vehículo no puede estar ocupado ese día 
         List<Conductor> conductoresNuevo = nuevoVehiculo.getConductores();
         if (conductoresNuevo != null && !conductoresNuevo.isEmpty()) {
             if (repository.existsConductorOcupadoEnOtroVehiculo(
@@ -223,7 +223,7 @@ public class OperacionService extends BaseServiceImpl<EnvioVehiculo, Long, Envio
             }
         }
 
-        // ── Reasignación ──────────────────────────────────────────────────────
+        // Reasignación 
         Vehiculo vehiculoAnterior = op.getVehiculo();
         op.setVehiculo(nuevoVehiculo);
         op.setFechaEstimadaEntrega(calcularFechaEstimada(op.getFecha(), op.getDistancia(), op.getEstado()));

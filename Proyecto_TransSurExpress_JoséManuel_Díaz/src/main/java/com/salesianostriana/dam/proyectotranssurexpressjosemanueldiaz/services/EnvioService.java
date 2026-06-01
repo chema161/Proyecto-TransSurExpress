@@ -23,7 +23,7 @@ public class EnvioService extends BaseServiceImpl<Envio, Long, EnvioRepository> 
      */
     public Envio guardarConValidacion(Envio envio) {
 
-        // ── 1. Bloqueo por peso mínimo ────────────────────────────────────────
+        // 1. Bloqueo por peso mínimo 
         if (envio.getPeso() != null && envio.getPeso() < PESO_MINIMO_KG) {
             throw new EnvioInvalidoException(
                 "El peso del envío (" + envio.getPeso() + " kg) " +
@@ -31,7 +31,7 @@ public class EnvioService extends BaseServiceImpl<Envio, Long, EnvioRepository> 
             );
         }
 
-        // ── 2. Código duplicado (solo al crear) ───────────────────────────────
+        // 2. Código duplicado (solo al crear) 
         if (envio.getId() == null) {
             List<Envio> existentes = repository.findByCodigoContainingIgnoreCase(envio.getCodigo());
             boolean codigoDuplicado = existentes.stream()

@@ -42,7 +42,6 @@ body {
     overflow: hidden;
 }
 
-/* Solo dejamos el destello azul sutil de la derecha, eliminamos la bola blanca de abajo */
 .envio-header::before {
     content: '';
     position: absolute;

@@ -22,7 +22,7 @@ public class HistorialEstado {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado_anterior")
-    private EstadoEnvio estadoAnterior;  // null si es la creación inicial
+    private EstadoEnvio estadoAnterior;  
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado_nuevo", nullable = false)

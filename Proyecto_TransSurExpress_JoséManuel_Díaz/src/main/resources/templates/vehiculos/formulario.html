@@ -88,12 +88,12 @@
     </div>
 
     <script>
-        // ── Validación frontend ─────────────────────────────────────────────────
+        // Validación frontend
 
         function validarFormulario() {
             let valido = true;
 
-            // Matrícula: solo validamos si el campo es editable (crear)
+            // Matrícula (crear)
             const matriculaInput = document.getElementById('matricula');
             if (!matriculaInput.readOnly) {
                 const matricula = matriculaInput.value.trim().toUpperCase();
@@ -106,7 +106,7 @@
                     valido = false;
                 } else {
                     quitarError(matriculaInput);
-                    matriculaInput.value = matricula; // forzar mayúsculas
+                    matriculaInput.value = matricula; 
                 }
             }
 
