@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,153 +9,223 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
     <link th:href="@{/css/index.css}" rel="stylesheet">
-    <link th:href="@{/css/lista-dark.css}" rel="stylesheet">
+    <link th:href="@{/css/lista.css}" rel="stylesheet">
 </head>
-<body>
+<body data-bs-theme="light">
 
+    <!-- ── Navbar ── -->
     <nav class="navbar-dash">
         <div class="container d-flex align-items-center gap-3">
             <a class="nav-brand me-3" th:href="@{/}">
                 <i class="bi bi-truck-front-fill"></i>
                 TransSur<span class="accent">Express</span>
             </a>
-            <div class="ms-auto">
-                <a th:href="@{/operaciones}" class="btn-volver-dark">
-                    <i class="bi bi-arrow-left"></i> Volver a operaciones
+            <div class="d-flex gap-3 flex-wrap">
+                <a th:href="@{/envios}"      class="nav-link-pill"><i class="bi bi-box-seam me-1"></i>Envíos</a>
+                <a th:href="@{/vehiculos}"   class="nav-link-pill"><i class="bi bi-truck me-1"></i>Vehículos</a>
+                <a th:href="@{/conductores}" class="nav-link-pill"><i class="bi bi-person-badge me-1"></i>Conductores</a>
+                <a th:href="@{/operaciones}" class="nav-link-pill active"><i class="bi bi-geo-alt me-1"></i>Operaciones</a>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <span class="nav-user" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-person-circle"></i>
+                    <span sec:authentication="name">usuario</span>
+                </span>
+                <a th:href="@{/logout}" class="btn-logout" sec:authorize="isAuthenticated()">
+                    <i class="bi bi-box-arrow-right me-1"></i>Salir
                 </a>
             </div>
         </div>
     </nav>
 
-    <!-- ── Header con datos del envío ── -->
-    <div class="hist-header" th:if="${historial != null and !#lists.isEmpty(historial)}">
-        <div class="container" style="position:relative; z-index:5;">
-            <div th:with="envio=${historial[0].envio}">
-                <div class="codigo-badge" th:text="${envio.codigo}">ENV-2026-001</div>
-                <h1 class="envio-title">Trazabilidad del Envío</h1>
-                <div class="ruta-visual">
-                    <span class="ciudad" th:text="${envio.origen}">Sevilla</span>
-                    <i class="bi bi-arrow-right flecha-ruta"></i>
-                    <span class="ciudad" th:text="${envio.destino}">Madrid</span>
-                </div>
-                <div class="info-chips-dark mt-3">
-                    <span class="chip-dark">
-                        <i class="bi bi-box-seam"></i>
-                        <span th:text="${#numbers.formatDecimal(envio.peso, 1, 'POINT', 2, 'COMMA') + ' kg'}">45,50 kg</span>
-                    </span>
-                    <span class="chip-dark">
-                        <i class="bi bi-currency-euro"></i>
-                        <span th:text="${#numbers.formatDecimal(envio.coste, 1, 'POINT', 2, 'COMMA') + ' €'}">120,00 €</span>
-                    </span>
-                    <span class="chip-dark">
-                        <i class="bi bi-signpost-split"></i>
-                        <span th:text="${#lists.size(historial) + ' tramos registrados'}">4 tramos</span>
-                    </span>
-                </div>
-            </div>
+    <!-- ── Page Hero ── -->
+    <div class="page-hero">
+        <div class="container">
+            <p class="hero-eyebrow">Seguimiento de rutas</p>
+            <h1 class="page-title">
+                <i class="bi bi-clock-history me-2" style="color:var(--azul); font-size:1.5rem;"></i>
+                Trazabilidad del Envío
+            </h1>
         </div>
     </div>
 
-    <div class="hist-header" th:if="${historial == null or #lists.isEmpty(historial)}">
-        <div class="container" style="position:relative; z-index:5;">
-            <div class="codigo-badge">SIN DATOS</div>
-            <h1 class="envio-title">Historial del Envío</h1>
-        </div>
-    </div>
+    <div class="dash-body">
+        <div class="container">
 
-    <!-- ── Barra de progreso ── -->
-    <div class="container" style="position:relative; z-index:10;">
-        <div class="progress-card" th:if="${historial != null and !#lists.isEmpty(historial)}">
-            <div th:with="ultimoEstado=${historial[#lists.size(historial)-1].estado}">
-                <div class="estado-steps">
-                    <div th:classappend="${ultimoEstado.name() == 'PREPARADO'} ? 'activo' : 'completado'" class="step">
-                        <div class="step-circle"><i class="bi bi-box-seam"></i></div>
-                        <span class="step-label">Preparado</span>
+            <!-- ── Cabecera del envío ── -->
+            <div th:if="${historial != null and !#lists.isEmpty(historial)}"
+                 th:with="envio=${historial[0].envio}">
+
+                <!-- Info cards del envío -->
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                    <div>
+                        <span class="val-blue val-bold" style="font-size:1.25rem; font-family:'Space Mono',monospace;"
+                              th:text="${envio.codigo}">ENV-2026-001</span>
                     </div>
-                    <div th:classappend="${ultimoEstado.name() == 'EN_RUTA'} ? 'activo' : (${ultimoEstado.name() == 'PREPARADO'} ? '' : 'completado')" class="step">
-                        <div class="step-circle"><i class="bi bi-truck"></i></div>
-                        <span class="step-label">En Ruta</span>
-                    </div>
-                    <div th:classappend="${ultimoEstado.name() == 'EN_REPARTO'} ? 'activo' : (${ultimoEstado.name() == 'ENTREGADO'} ? 'completado' : '')" class="step">
-                        <div class="step-circle"><i class="bi bi-bicycle"></i></div>
-                        <span class="step-label">En Reparto</span>
-                    </div>
-                    <div th:classappend="${ultimoEstado.name() == 'ENTREGADO'} ? 'activo' : ''" class="step">
-                        <div class="step-circle"><i class="bi bi-house-check"></i></div>
-                        <span class="step-label">Entregado</span>
+                    <div class="vr"></div>
+                    <span class="text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>
+                        <span th:text="${envio.origen}">Sevilla</span>
+                        <i class="bi bi-arrow-right mx-1"></i>
+                        <span th:text="${envio.destino}">Madrid</span>
+                    </span>
+                    <div class="vr"></div>
+                    <span class="val-mono" style="color:var(--verde);">
+                        <i class="bi bi-currency-euro me-1"></i>
+                        <span th:text="${#numbers.formatDecimal(envio.coste, 1, 'POINT', 2, 'COMMA')}">120,00</span> €
+                    </span>
+                    <span class="val-mono text-muted">
+                        <i class="bi bi-box-seam me-1"></i>
+                        <span th:text="${#numbers.formatDecimal(envio.peso, 1, 'POINT', 2, 'COMMA')}">45,50</span> kg
+                    </span>
+                    <div class="ms-auto">
+                        <a th:href="@{/operaciones}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+                            <i class="bi bi-arrow-left"></i> Volver a operaciones
+                        </a>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- ── Timeline ── -->
-    <div class="container" style="position:relative; z-index:10;">
-        <div class="timeline-container-dark">
+                <!-- ── Barra de progreso de estados ── -->
+                <div class="card shadow-sm mb-4 p-3"
+                     th:with="ultimoEstado=${historial[#lists.size(historial)-1].estado}">
+                    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
 
-            <div th:if="${historial == null or #lists.isEmpty(historial)}" class="empty-state-dark">
-                <div class="empty-icon-dark"><i class="bi bi-inbox"></i></div>
-                <h5>Sin tramos registrados</h5>
-                <p>Este envío todavía no tiene operaciones asociadas.</p>
-                <a th:href="@{/operaciones/nueva}" class="btn-primary-dark mt-2">
-                    <i class="bi bi-plus-circle me-1"></i> Registrar primer tramo
-                </a>
-            </div>
-
-            <div th:if="${historial != null and !#lists.isEmpty(historial)}">
-                <p class="section-label"><i class="bi bi-clock-history me-2"></i>Registro cronológico</p>
-                <div class="timeline-dark">
-                    <div class="timeline-item-dark" th:each="tramo : ${historial}">
-                        <div th:classappend="'dot-' + ${tramo.estado.name()}" class="timeline-dot-dark">
-                            <i class="bi bi-circle-fill" style="font-size:0.5rem;"></i>
+                        <!-- PREPARADO -->
+                        <div class="d-flex align-items-center gap-2"
+                             th:classappend="${ultimoEstado.name() == 'PREPARADO' or ultimoEstado.name() == 'EN_RUTA' or ultimoEstado.name() == 'EN_REPARTO' or ultimoEstado.name() == 'ENTREGADO'} ? 'text-dark' : 'text-muted'">
+                            <span class="badge rounded-circle d-flex align-items-center justify-content-center"
+                                  style="width:32px;height:32px;background:#6c757d;">
+                                <i class="bi bi-box-seam" style="color:white;"></i>
+                            </span>
+                            <span class="fw-semibold" style="font-size:.85rem;">Preparado</span>
                         </div>
-                        <div th:classappend="'border-' + ${tramo.estado.name()}" class="timeline-card-dark">
-                            <div class="card-top-dark">
-                                <span class="val-bold">
-                                    <i class="bi bi-geo-alt-fill me-1 val-muted" style="font-size:0.85rem;"></i>
-                                    <span th:text="${tramo.lugar}">Almacén Central Sevilla</span>
-                                </span>
-                                <span class="pill-estado"
-                                      th:classappend="'pill-' + ${tramo.estado.name()}"
-                                      th:text="${tramo.estado.name().replace('_', ' ')}">
-                                </span>
-                            </div>
-                            <div class="card-meta-dark">
-                                <div class="meta-item-dark">
-                                    <i class="bi bi-calendar3"></i>
-                                    <strong th:text="${#temporals.format(tramo.fecha, 'dd MMM yyyy')}">20 Mayo 2026</strong>
-                                </div>
-                                <div class="meta-item-dark">
-                                    <i class="bi bi-truck"></i>
-                                    <span>Vehículo:
-                                        <strong th:text="${tramo.vehiculo != null ? tramo.vehiculo.matricula : 'N/A'}">1234-BBB</strong>
-                                    </span>
-                                </div>
-                                <div class="meta-item-dark" th:if="${tramo.distancia != null}">
-                                    <i class="bi bi-signpost-2"></i>
-                                    <strong th:text="${#numbers.formatDecimal(tramo.distancia, 1, 'POINT', 2, 'COMMA') + ' km'}">210,50 km</strong>
-                                </div>
-                            </div>
+
+                        <div class="flex-grow-1" style="height:3px;background:#dee2e6;min-width:20px;"></div>
+
+                        <!-- EN RUTA -->
+                        <div class="d-flex align-items-center gap-2"
+                             th:classappend="${ultimoEstado.name() == 'EN_RUTA' or ultimoEstado.name() == 'EN_REPARTO' or ultimoEstado.name() == 'ENTREGADO'} ? 'text-dark' : 'text-muted'">
+                            <span class="badge rounded-circle d-flex align-items-center justify-content-center"
+                                  th:style="${ultimoEstado.name() == 'EN_RUTA' or ultimoEstado.name() == 'EN_REPARTO' or ultimoEstado.name() == 'ENTREGADO'} ? 'width:32px;height:32px;background:#0d6efd;' : 'width:32px;height:32px;background:#dee2e6;'">
+                                <i class="bi bi-truck" style="color:white;"></i>
+                            </span>
+                            <span class="fw-semibold" style="font-size:.85rem;">En Ruta</span>
                         </div>
+
+                        <div class="flex-grow-1" style="height:3px;background:#dee2e6;min-width:20px;"></div>
+
+                        <!-- EN REPARTO -->
+                        <div class="d-flex align-items-center gap-2"
+                             th:classappend="${ultimoEstado.name() == 'EN_REPARTO' or ultimoEstado.name() == 'ENTREGADO'} ? 'text-dark' : 'text-muted'">
+                            <span class="badge rounded-circle d-flex align-items-center justify-content-center"
+                                  th:style="${ultimoEstado.name() == 'EN_REPARTO' or ultimoEstado.name() == 'ENTREGADO'} ? 'width:32px;height:32px;background:#ffc107;' : 'width:32px;height:32px;background:#dee2e6;'">
+                                <i class="bi bi-bicycle" style="color:white;"></i>
+                            </span>
+                            <span class="fw-semibold" style="font-size:.85rem;">En Reparto</span>
+                        </div>
+
+                        <div class="flex-grow-1" style="height:3px;background:#dee2e6;min-width:20px;"></div>
+
+                        <!-- ENTREGADO -->
+                        <div class="d-flex align-items-center gap-2"
+                             th:classappend="${ultimoEstado.name() == 'ENTREGADO'} ? 'text-dark' : 'text-muted'">
+                            <span class="badge rounded-circle d-flex align-items-center justify-content-center"
+                                  th:style="${ultimoEstado.name() == 'ENTREGADO'} ? 'width:32px;height:32px;background:#198754;' : 'width:32px;height:32px;background:#dee2e6;'">
+                                <i class="bi bi-house-check" style="color:white;"></i>
+                            </span>
+                            <span class="fw-semibold" style="font-size:.85rem;">Entregado</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ── Tabla de tramos ── -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <p class="section-label mb-0">
+                        <i class="bi bi-clock-history me-1"></i>
+                        Registro cronológico
+                        <span class="text-muted fw-normal ms-1"
+                              th:text="'(' + ${#lists.size(historial)} + ' tramos)'"></span>
+                    </p>
+                </div>
+
+                <div class="card shadow-sm overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Punto de Control</th>
+                                    <th>Vehículo</th>
+                                    <th>Distancia</th>
+                                    <th>Entrega Est.</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="tramo : ${historial}">
+                                    <td>
+                                        <span class="val-mono val-muted"
+                                              th:text="${#temporals.format(tramo.fecha, 'dd/MM/yyyy')}">
+                                        </span>
+                                    </td>
+                                    <td th:text="${tramo.lugar}"
+                                        style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                        Almacén Central Sevilla
+                                    </td>
+                                    <td>
+                                        <span class="plate-chip"
+                                              th:text="${tramo.vehiculo != null ? tramo.vehiculo.matricula : 'N/A'}">
+                                            1234-BBB
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="val-mono"
+                                              th:text="${#numbers.formatDecimal(tramo.distancia, 1, 'POINT', 2, 'COMMA') + ' km'}">
+                                            210,50 km
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="val-mono val-muted"
+                                              th:text="${tramo.fechaEstimadaEntrega != null ? #temporals.format(tramo.fechaEstimadaEntrega, 'dd/MM/yyyy') : 'Pendiente'}">
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="chip-estado"
+                                              th:classappend="'chip-' + ${tramo.estado?.name()}"
+                                              th:text="${tramo.estado?.name()?.replace('_', ' ')}">
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ── Sin historial ── -->
+            <div th:if="${historial == null or #lists.isEmpty(historial)}">
+                <div class="d-flex justify-content-end mb-3">
+                    <a th:href="@{/operaciones}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-arrow-left"></i> Volver a operaciones
+                    </a>
+                </div>
+                <div class="card shadow-sm p-5 text-center text-muted">
+                    <i class="bi bi-inbox fs-1 mb-3"></i>
+                    <h5>Sin tramos registrados</h5>
+                    <p class="mb-4">Este envío todavía no tiene operaciones asociadas.</p>
+                    <div>
+                        <a th:href="@{/operaciones/nueva}"
+                           class="btn btn-success d-inline-flex align-items-center gap-2 fw-bold">
+                            <i class="bi bi-plus-circle me-1"></i> Registrar primer tramo
+                        </a>
                     </div>
                 </div>
             </div>
 
         </div>
     </div>
-
-    <style>
-        .envio-title { font-size: 2rem; font-weight: 700; margin: 0; color: var(--blanco); }
-        .ruta-visual { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap; }
-        .ciudad { font-family: 'Space Mono', monospace; font-size: 1rem; font-weight: 700; color: var(--blanco); }
-        .flecha-ruta { color: var(--azul); font-size: 1.4rem; }
-        .codigo-badge {
-            font-family: 'Space Mono', monospace; font-size: 0.78rem;
-            background: rgba(26,86,219,0.25); border: 1px solid rgba(26,86,219,0.5);
-            color: var(--en-ruta); padding: 0.3rem 0.8rem;
-            border-radius: 4px; display: inline-block; margin-bottom: 0.75rem; letter-spacing: 1px;
-        }
-    </style>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

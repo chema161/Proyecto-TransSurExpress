@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
     <link th:href="@{/css/index.css}" rel="stylesheet">
 </head>
-<body>
+<body data-bs-theme="light">
 
     <nav class="navbar-dash">
         <div class="container d-flex align-items-center gap-3">
@@ -18,7 +18,7 @@
                 <i class="bi bi-truck-front-fill"></i>
                 TransSur<span class="accent">Express</span>
             </a>
-            <div class="d-flex gap-1 flex-wrap">
+            <div class="d-flex gap-3 flex-wrap">
                 <a th:href="@{/envios}"      class="nav-link-pill"><i class="bi bi-box-seam me-1"></i>Envíos</a>
                 <a th:href="@{/vehiculos}"   class="nav-link-pill"><i class="bi bi-truck me-1"></i>Vehículos</a>
                 <a th:href="@{/conductores}" class="nav-link-pill"><i class="bi bi-person-badge me-1"></i>Conductores</a>
@@ -205,42 +205,6 @@
                         </div>
                     </div>
                 </div>
-
-            </div>
-
-            <hr class="dash-divider">
-
-            <!-- Módulos de acceso rápido -->
-            <p class="section-label">Acceso rápido</p>
-            <div class="modulo-grid">
-
-                <a th:href="@{/envios/nuevo}" class="modulo-card m-blue">
-                    <div class="modulo-icon-wrap"><i class="bi bi-plus-circle-fill"></i></div>
-                    <p class="modulo-name">Nuevo envío</p>
-                    <p class="modulo-desc">Registra un nuevo paquete con origen, destino y peso.</p>
-                    <span class="modulo-arrow"><i class="bi bi-arrow-right"></i></span>
-                </a>
-
-                <a th:href="@{/operaciones/nueva}" class="modulo-card m-orange">
-                    <div class="modulo-icon-wrap"><i class="bi bi-calendar-plus-fill"></i></div>
-                    <p class="modulo-name">Planificar ruta</p>
-                    <p class="modulo-desc">Asigna un envío a un vehículo y define el tramo de reparto.</p>
-                    <span class="modulo-arrow"><i class="bi bi-arrow-right"></i></span>
-                </a>
-
-                <a th:href="@{/vehiculos}" class="modulo-card m-green">
-                    <div class="modulo-icon-wrap"><i class="bi bi-truck-front-fill"></i></div>
-                    <p class="modulo-name">Gestión de flota</p>
-                    <p class="modulo-desc">Consulta capacidades y estado de cada vehículo activo.</p>
-                    <span class="modulo-arrow"><i class="bi bi-arrow-right"></i></span>
-                </a>
-
-                <a th:href="@{/conductores}" class="modulo-card m-yellow">
-                    <div class="modulo-icon-wrap"><i class="bi bi-person-badge-fill"></i></div>
-                    <p class="modulo-name">Plantilla</p>
-                    <p class="modulo-desc">Consulta o actualiza los datos del personal de conducción.</p>
-                    <span class="modulo-arrow"><i class="bi bi-arrow-right"></i></span>
-                </a>
 
             </div>
 
