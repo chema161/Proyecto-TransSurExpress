@@ -97,8 +97,16 @@ body {
 }
 .estado-bar-track {
     flex: 1;
-    height: 6px;
+    height: 8px;
     background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.estado-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    min-width: 0;
 }
 .op-ruta {
     flex: 1;

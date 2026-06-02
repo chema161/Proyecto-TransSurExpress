@@ -3,27 +3,41 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.CodigoEnvioDuplicadoException;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exceptions.EnvioInvalidoException;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.Envio;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.modelos.EnvioVehiculo;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repository.EnvioRepository;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repository.EnvioVehiculoRepository;
+import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.repository.HistorialEstadoRepository;
 import com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.services.base.BaseServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 public class EnvioService extends BaseServiceImpl<Envio, Long, EnvioRepository> {
 
-    /** Peso mínimo en kg que debe tener un envío para poder registrarse */
     private static final double PESO_MINIMO_KG = 0.5;
+
+    @Autowired
+    private EnvioVehiculoRepository envioVehiculoRepository;
+
+    @Autowired
+    private HistorialEstadoRepository historialRepository;
 
     /**
      * Guarda un envío aplicando las reglas de negocio:
      *
      * 1. Peso mínimo       → EnvioInvalidoException   (peso < 0.5 kg)
      * 2. Código duplicado  → CodigoEnvioDuplicadoException (solo al crear)
+     * 3. Edición segura    → carga la entidad existente para no perder las rutas asociadas.
+     *
+     * @Transactional es necesario para que findById y save compartan la misma sesión
+     * de Hibernate
      */
+    @Transactional
     public Envio guardarConValidacion(Envio envio) {
 
-        // 1. Bloqueo por peso mínimo 
         if (envio.getPeso() != null && envio.getPeso() < PESO_MINIMO_KG) {
             throw new EnvioInvalidoException(
                 "El peso del envío (" + envio.getPeso() + " kg) " +
@@ -31,7 +45,6 @@ public class EnvioService extends BaseServiceImpl<Envio, Long, EnvioRepository> 
             );
         }
 
-        // 2. Código duplicado (solo al crear) 
         if (envio.getId() == null) {
             List<Envio> existentes = repository.findByCodigoContainingIgnoreCase(envio.getCodigo());
             boolean codigoDuplicado = existentes.stream()
@@ -42,9 +55,24 @@ public class EnvioService extends BaseServiceImpl<Envio, Long, EnvioRepository> 
                     "Los códigos de envío deben ser únicos."
                 );
             }
+            return repository.save(envio);
         }
 
-        return repository.save(envio);
+        return repository.findById(envio.getId()).map(existing -> {
+            existing.setOrigen(envio.getOrigen());
+            existing.setDestino(envio.getDestino());
+            existing.setPeso(envio.getPeso());
+            existing.setCoste(envio.getCoste());
+            return repository.save(existing);
+        }).orElse(repository.save(envio));
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        List<EnvioVehiculo> operaciones = envioVehiculoRepository.findByEnvioId(id);
+        operaciones.forEach(op -> historialRepository.deleteByEnvioVehiculoId(op.getId()));
+        repository.deleteById(id);
     }
 
     public List<Envio> findByCodigo(String codigo) {

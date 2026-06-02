@@ -36,6 +36,6 @@ public class Envio {
     private Double coste;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "envio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "envio", cascade = CascadeType.ALL)
     private List<EnvioVehiculo> rutas;
 }

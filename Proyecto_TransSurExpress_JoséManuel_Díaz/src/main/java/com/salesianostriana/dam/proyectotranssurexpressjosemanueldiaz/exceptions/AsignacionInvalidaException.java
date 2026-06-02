@@ -9,6 +9,5 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exception
 public class AsignacionInvalidaException extends RuntimeException {
 	
 	private final static long serialVersionUID = 1L;
-	
     public AsignacionInvalidaException(String mensaje) { super(mensaje); }
 }
