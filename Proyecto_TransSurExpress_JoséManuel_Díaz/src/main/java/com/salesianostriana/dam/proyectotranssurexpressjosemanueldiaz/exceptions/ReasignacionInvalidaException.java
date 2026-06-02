@@ -10,6 +10,7 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exception
  */
 public class ReasignacionInvalidaException extends RuntimeException {
 	
+	private final static long serialVersionUID = 1L;
     public ReasignacionInvalidaException(String mensaje) {
         super(mensaje);
     }

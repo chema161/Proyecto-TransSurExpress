@@ -41,8 +41,8 @@ INSERT INTO historial_estado (id, envio_vehiculo_id, estado_anterior, estado_nue
     VALUES (6, 5, NULL,        'EN_RUTA',    '2026-05-24 07:30:00', 'admin');
 
 -- Reiniciar secuencias
-ALTER TABLE vehiculo ALTER COLUMN id RESTART WITH 10;
-ALTER TABLE conductor ALTER COLUMN id RESTART WITH 10;
-ALTER TABLE envio ALTER COLUMN id RESTART WITH 10;
-ALTER TABLE envio_vehiculo ALTER COLUMN id RESTART WITH 10;
-ALTER TABLE historial_estado ALTER COLUMN id RESTART WITH 10;
+ALTER TABLE vehiculo ALTER COLUMN id RESTART WITH 6;
+ALTER TABLE conductor ALTER COLUMN id RESTART WITH 6;
+ALTER TABLE envio ALTER COLUMN id RESTART WITH 6;
+ALTER TABLE envio_vehiculo ALTER COLUMN id RESTART WITH 6;
+ALTER TABLE historial_estado ALTER COLUMN id RESTART WITH 11;

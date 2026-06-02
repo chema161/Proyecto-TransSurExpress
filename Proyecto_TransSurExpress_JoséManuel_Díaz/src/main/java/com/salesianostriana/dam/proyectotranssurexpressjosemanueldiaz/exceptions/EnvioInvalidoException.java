@@ -6,6 +6,7 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exception
  */
 public class EnvioInvalidoException extends RuntimeException {
 	
+	private final static long serialVersionUID = 1L;
     public EnvioInvalidoException(String mensaje) {
         super(mensaje);
     }

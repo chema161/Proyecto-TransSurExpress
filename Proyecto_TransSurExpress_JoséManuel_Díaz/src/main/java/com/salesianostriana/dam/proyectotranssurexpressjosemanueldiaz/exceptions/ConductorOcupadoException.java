@@ -6,6 +6,7 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exception
  */
 public class ConductorOcupadoException extends RuntimeException {
 	
+	private final static long serialVersionUID = 1L;
     public ConductorOcupadoException(String mensaje) {
         super(mensaje);
     }
