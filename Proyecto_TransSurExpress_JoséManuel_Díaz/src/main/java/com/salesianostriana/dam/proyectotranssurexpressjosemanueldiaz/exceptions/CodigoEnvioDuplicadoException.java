@@ -6,6 +6,7 @@ package com.salesianostriana.dam.proyectotranssurexpressjosemanueldiaz.exception
  */
 public class CodigoEnvioDuplicadoException extends RuntimeException {
 	
+	private final static long serialVersionUID = 1L;
     public CodigoEnvioDuplicadoException(String mensaje) {
         super(mensaje);
     }

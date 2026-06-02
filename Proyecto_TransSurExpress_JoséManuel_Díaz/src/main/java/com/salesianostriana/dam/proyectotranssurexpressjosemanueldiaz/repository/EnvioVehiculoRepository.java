@@ -42,7 +42,7 @@ public interface EnvioVehiculoRepository extends JpaRepository<EnvioVehiculo, Lo
             @Param("vehiculoId") Long vehiculoId,
             @Param("estados") List<EstadoEnvio> estados,
             @Param("operacionId") Long operacionId
-    );
+    ); 
 
     // Bloquea crear un tramo duplicado: mismo vehículo + misma fecha + mismo envío.
     // Un vehículo si puede llevar varios envíos distintos el mismo día.

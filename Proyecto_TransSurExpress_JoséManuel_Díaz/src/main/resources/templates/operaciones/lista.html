@@ -9,9 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
     <link th:href="@{/css/index.css}" rel="stylesheet">
-    <link th:href="@{/css/lista-dark.css}" rel="stylesheet">
+    <link th:href="@{/css/lista.css}" rel="stylesheet">
 </head>
-<body>
+<body data-bs-theme="light">
 
     <nav class="navbar-dash">
         <div class="container d-flex align-items-center gap-3">
@@ -19,22 +19,22 @@
                 <i class="bi bi-truck-front-fill"></i>
                 TransSur<span class="accent">Express</span>
             </a>
-            <div class="d-flex gap-1 flex-wrap">
+            <div class="d-flex gap-3 flex-wrap">
                 <a th:href="@{/envios}"      class="nav-link-pill"><i class="bi bi-box-seam me-1"></i>Envíos</a>
                 <a th:href="@{/vehiculos}"   class="nav-link-pill"><i class="bi bi-truck me-1"></i>Vehículos</a>
                 <a th:href="@{/conductores}" class="nav-link-pill"><i class="bi bi-person-badge me-1"></i>Conductores</a>
                 <a th:href="@{/operaciones}" class="nav-link-pill active"><i class="bi bi-geo-alt me-1"></i>Operaciones</a>
             </div>
             <div class="ms-auto d-flex align-items-center gap-2">
-                <span class="nav-user" sec:authorize="isAuthenticated()">
-                    <i class="bi bi-person-circle"></i>
-                    <span sec:authentication="name">usuario</span>
-                </span>
-                <a th:href="@{/login}"  class="btn-logout" sec:authorize="!isAuthenticated()">
+                <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-2 border border-white border-opacity-25 rounded px-3 py-1">
+                    <i class="bi bi-person-circle text-white"></i>
+                    <span class="nav-user" sec:authentication="name">usuario</span>
+                    <a th:href="@{/logout}" class="btn btn-sm btn-outline-light ms-2 d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-box-arrow-right"></i> Salir
+                    </a>
+                </div>
+                <a th:href="@{/login}" class="btn-logout" sec:authorize="!isAuthenticated()">
                     <i class="bi bi-box-arrow-in-right me-1"></i>Acceder
-                </a>
-                <a th:href="@{/logout}" class="btn-logout" sec:authorize="isAuthenticated()">
-                    <i class="bi bi-box-arrow-right me-1"></i>Salir
                 </a>
             </div>
         </div>
@@ -55,14 +55,14 @@
 
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <p class="section-label mb-0">Operaciones registradas</p>
-                <a th:href="@{/operaciones/nueva}" class="btn-success-dark">
+                <a th:href="@{/operaciones/nueva}" class="btn btn-success d-inline-flex align-items-center gap-2 fw-bold">
                     <i class="bi bi-calendar-plus"></i> Planificar Servicio
                 </a>
             </div>
 
-            <div class="dark-panel">
-                <div class="table-responsive-dark">
-                    <table class="dark-table">
+            <div class="card shadow-sm overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
@@ -108,31 +108,31 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="d-flex gap-1 flex-wrap">
+                                    <div class="d-flex gap-3 flex-wrap">
                                         <a sec:authorize="hasRole('ADMINISTRADOR')"
                                            th:href="@{/operaciones/editar/{id}(id=${op.id})}"
-                                           class="btn-action edit" title="Editar">
+                                           class="btn btn-sm btn-outline-warning d-inline-flex align-items-center gap-1" title="Editar">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         <a sec:authorize="hasRole('ADMINISTRADOR')"
                                            th:href="@{/operaciones/borrar/{id}(id=${op.id})}"
-                                           class="btn-action danger"
+                                           class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1"
                                            onclick="return confirm('¿Seguro que quieres eliminar esta operación?');"
                                            title="Eliminar">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                         <a th:href="@{/operaciones/historial/{id}(id=${op.envio.id})}"
-                                           class="btn-action hist" title="Trazabilidad del envío">
+                                           class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1" title="Trazabilidad del envío">
                                             <i class="bi bi-clock-history"></i>
                                         </a>
                                         <a th:href="@{/operaciones/{id}/estados(id=${op.id})}"
-                                           class="btn-action info" title="Historial de estados">
+                                           class="btn btn-sm btn-outline-info d-inline-flex align-items-center gap-1" title="Historial de estados">
                                             <i class="bi bi-arrow-left-right"></i>
                                         </a>
                                         <a sec:authorize="hasRole('ADMINISTRADOR')"
                                            th:if="${op.estado?.name() != 'ENTREGADO'}"
                                            th:href="@{/operaciones/{id}/reasignar(id=${op.id})}"
-                                           class="btn-action warn" title="Reasignar vehículo">
+                                           class="btn btn-sm btn-outline-warning d-inline-flex align-items-center gap-1" title="Reasignar vehículo">
                                             <i class="bi bi-arrow-repeat"></i>
                                         </a>
                                     </div>
